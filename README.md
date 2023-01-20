@@ -1,140 +1,154 @@
 [![N|Solid](https://accelasearch.com/images/as-logo.svg)](https://accelasearch.com/)
 # Accelasearch Magento 2
-### Installazione tramite Composer
-Installa il modulo tramite Composer:
-```
+This document is available in [English](README.md), [Italian](README.it.md).
+
+## Installation
+### Composer Installation
+Install the module through [Composer](https://getcomposer.org/]):
+```sh
 composer require accelasearch/magento2
 ```
-Abilita il modulo:
-```
+Enable the module:
+```sh
 bin/magento module:enable AccelaSearch_Search
 ```
-Aggiorna il database e le dipendenze:
-```
+Upgrade Magento's database and dependencies:
+```sh
 bin/magento setup:upgrade
 ```
-Compila la dependency injection:
-```
+Compile dependency injection:
+```sh
 bin/magento setup:di:compile
 ```
-Compila i contenuti statici:
-```
+Compile static content:
+```sh
 bin/magento setup:static-content-deploy
 ```
-Pulisci la cache:
-```
+Clear cache:
+```sh
 bin/magento cache:flush
 ```
 
-### Installazione Manuale
-Scarica il pacchetto da GitHub:
-```
+## Manual Installation
+Download package from GitHub:
+```sh
 wget https://github.com/accelasearch/magento2-module/archive/refs/heads/main.zip
 ```
-Scompatta lo zip:
-```
+Extract the zip file:
+```sh
 unzip main.zip
 ```
-Copiane il contenuto:
-```
+Copy its content into Magento's appropriate location:
+```sh
 cp -R main/* app/code/AccelaSearch/Search
 ```
-Abilita il modulo:
-```
+Enable the module:
+```sh
 bin/magento module:enable AccelaSearch_Search
 ```
-Aggiorna il database e le dipendenze:
-```
+Upgrade Magento's database and dependencies:
+```sh
 bin/magento setup:upgrade
 ```
-Compila la dependency injection:
-```
+Compile dependency injection:
+```sh
 bin/magento setup:di:compile
 ```
-Compila i contenuti statici:
-```
+Compile static content:
+```sh
 bin/magento setup:static-content-deploy
 ```
-Pulisci la cache:
-```
+Clear cache:
+```sh
 bin/magento cache:flush
 ```
 
 
-
-### Configurazione Feed
+## Feed Configuration
 ___
-#### FEED STATUS
+### Feed Status
 ![Accelasearch Status](https://i.imgur.com/eGKjzAe.jpg)
-Abilita o disabilita l'esportazione del feed
+
+Enables or disables feed export
 ___
-#### USE VUE STOREFRONT
+### Use Vue Storefront
 ![Accelasearch Status](https://i.imgur.com/Kmn4Kcs.jpg)
-Se abilitato e' possibile specificare una dimensione delle immagini custom in fase di export del feed
+
+If enabled it will be possible to specify a custom image size for the export process
 ___
-#### EXPORT DIRECTORY
+### Export Directory
 ![Accelasearch Status](https://i.imgur.com/BFvyEs1.jpg)
-Specifica il path in cui depositare i file, relativo dalla root di Magento 2
+
+Specifies destination directory for the XML feeds, relative to Magento 2 root
 ___
-#### CUSTOM BASE URL
+### Custom Base URL
 ![Accelasearch Status](https://i.imgur.com/lVPasvn.jpg)
-E' possibile specificare un custom base URL, utile sopratutto per frontend VUE per recuperare le immagini dei prodotti
+
+Allows to specify a custom base URL, for example when using VUE to retrieve images of products
 ___
-#### CATEGORY
+### Category
 ![Accelasearch Status](https://i.imgur.com/auLjdRz.jpg)
-Specifica se includere o escludere le categorie sotto indicate
+
+Specifies whether selected categories should be included or excluded
 
 ![Accelasearch Status](https://i.imgur.com/4zyeAD5.jpg)
 ___
-#### EXCLUDE FROM PATH GENERATION
+### Exclude from Path generation
 ![Accelasearch Status](https://i.imgur.com/0iJoII1.jpg)
-Specifica categorie da escludere nella gerazione del path di categoria dei prodotti del feed.
-Ad esempio se alcune categorie sono specifiche per una lingua, vanno escluse dal feed di quella Storeview.
+
+Specifies categories which shall be excluded by the category path generation process.
+As an example, if some categories are specific for some language, they should be excluded from the feed of other Storeviews.
 ___
-#### SEARCH
+### Search
 ![Accelasearch Status](https://i.imgur.com/gnEE6JH.jpg)
-Specifica l'endpoint contenente il js di accelasearch ed eventuale file CSS da includere per stili specifici del sito
+
+Specifies endpoint where the JavaScript code of AccelaSearch can be accessed, as well as an optional CSS to be included for overriding and customization
 ___
-#### FIELDS
+### Fields
 ![Accelasearch Status](https://i.imgur.com/FugBM0S.jpg)
-Specifica i campi principali del feed. Alcuni campi sono ereditati dal modulo di googleshopping e non sono utilizzati da 
-AccelaSearch
+
+Specifies main fields for the feed. Some fields will be inherited form the GoogleShopping module and will not be used by AccelaSearch
 
 ![Accelasearch Status](https://i.imgur.com/ITloS6j.jpg)
-Sui campi custom e' possibile specificare dei valori aggiuntivi che verranno mappati come "chiave" => "valore"
+
+Allows to specify additional values for custom fields which will be mapped as *key => value*
 
 ![Accelasearch Status](https://i.imgur.com/0AlUam0.jpg)
-Qui e' possibile specificare attributi con valori multipli da esplodere su piu' righe come su specifiche google shopping
+
+Allows to specify attributes with multiple values which will be exploded over multiple rows, as dictated by Google Shopping specifications
 ___
-#### CRON CONFIG
+### Cron Configuration
 ![Accelasearch Status](https://i.imgur.com/oDdFIkN.jpg)
-Qui e' possibile abilitare il cron per la generazione schedulata dei feed, inoltre e' possibile configurare la relativa 
-cron expression e schedulare una elaborazione al primo momento disponibile.
+
+Allows to enable a cronjob to scheduler generation of feeds, as well as configure the relative cron expression and schedule the process as soon as possible.
 ___
-#### NOTIFICATION
+### Notification
 ![Accelasearch Status](https://i.imgur.com/coph0BM.jpg)
-Se abilitato e' possibile notificare a determinati indirizzi email eventuali prodotti con errori durante la generazione
-del feed
+
+Allows to specify a set of email addresses to which notify products affected by errors during the feed generation process
 ___
-#### DYNAMIC PRICE
+### Dynamic Price
 ![Accelasearch Status](https://i.imgur.com/OzLKnu9.jpg)
 
-Endpoint per fornire ad accelasearch i prezzi dinamici in base al customer type e currency code.
+Exposes an endpoint which AccelaSearch can query to get dynamic prices depending on type of customer and currency code.
 
-- Listing price : Specificare l'attributo usato a catalogo per identificare i prezzi
-- Public Visitor Type : Esportare o meno il customer group
-- Public Currency Code : Esportare o meno il currency code
-- Cache Lifetime : Impostare il TTL della cache dei prezzi dimanici
-### Comandi Manuali
+- Listing price: Attribute used to identify prices
+- Public Visitor Type: Whether to export customer group
+- Public Currency Code: Whether to export currency code
+- Cache Lifetime: Time to live of dynamic price (used for caching)
+
+
+## Comandi Manuali
+Generates feeds as configured:
 ```sh
 bin/magento accelasearch:generate:feed
 ```
-Genera i feed come da configurazione
-### Cron
-Configurabili a Backend di default la cron expression e' la seguente:
+
+## Cron
+Default cron expression (configurable through user interface):
 ```sh
 0 1 * * *
 ```
-### NOTE
-Il modulo genera un file di lock nella cartella var/locks per determinare evitare che piu' generazioni di feed vengano
-eseguite in contemporanea
+
+## NOTE
+This modules generates a lock file under `var/locks` in order to prevent concurrent feed generation processes.
