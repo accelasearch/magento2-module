@@ -29,7 +29,7 @@ Pulisci la cache:
 bin/magento cache:flush
 ```
 
-## Installazione Manuale
+### Installazione Manuale
 Scarica il pacchetto da GitHub:
 ```sh
 wget https://github.com/accelasearch/magento2-module/archive/refs/heads/main.zip
