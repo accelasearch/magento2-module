@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Cache/etc/cache.xsd">
+    <type name="dynamic_price" translate="label,description" instance="AccelaSearch\Search\Model\Cache\Type\DynamicPrice">
+        <label>Accelasearch Dynamic Price Cache</label>
+        <description>Accelasearch Dynamic Price Cache</description>
+    </type>
+</config>

@@ -1,0 +1,71 @@
+"Schedule Feed Generation","Schedule Feed Generation"
+"File lock exists","File lock exists"
+"From Price","From Price"
+"Shipping Cost","Shipping Cost"
+"Add Price Range","Add Price Range"
+Recipient(s),Recipient(s)
+"Add Recipient","Add Recipient"
+"From Weight","From Weight"
+"Add Weight Range","Add Weight Range"
+"Feed Generation scheduled!","Feed Generation scheduled!"
+"'Feed Generation not scheduled ' . ""message""","'Feed Generation not scheduled ' . ""message"""
+"jobCode not set!","jobCode not set!"
+"""Get lock file path error: "" .","""Get lock file path error: "" ."
+"""Get log file path error: "" .","""Get log file path error: "" ."
+"-- NO CATEGORY --","-- NO CATEGORY --"
+.,.
+"by Magento attribute","by Magento attribute"
+"by price","by price"
+"by weight","by weight"
+"It is not possible to save the cron expression.","It is not possible to save the cron expression."
+"%store_name: AccelaSearch Google Shopping","%store_name: AccelaSearch Google Shopping"
+"AccelaSearch GoogleShopping Result","AccelaSearch GoogleShopping Result"
+"It is possible to consult log file in this directory: ","It is possible to consult log file in this directory: "
+"If Notifier is enabled, it needs to add at least an e-mail recipient.","If Notifier is enabled, it needs to add at least an e-mail recipient."
+"If Feed Generation is enabled, it need to set a valid frequency.","If Feed Generation is enabled, it need to set a valid frequency."
+AccelaSearch,AccelaSearch
+"Google Shopping","Google Shopping"
+"General Parameters","General Parameters"
+Enable,Enable
+"Feed files directory","Feed files directory"
+"The directory where the feed files are stored.<br />
+                            <u>Remember to put '/' before the directory name</u>.","The directory where the feed files are stored.<br />
+                            <u>Remember to put '/' before the directory name</u>."
+Filters,Filters
+"Categories to exclude","Categories to exclude"
+"Select the categories to exclude.<br />
+                            The products belonging to those categories will be excluded during feed generation process.","Select the categories to exclude.<br />
+                            The products belonging to those categories will be excluded during feed generation process."
+"Feed Fields","Feed Fields"
+"Product Description","Product Description"
+"Select the attribute to map to product description.","Select the attribute to map to product description."
+"Product Brand","Product Brand"
+"Select the attribute to map to product brand.","Select the attribute to map to product brand."
+"Brand Name","Brand Name"
+"Product GTIN","Product GTIN"
+"Select the attribute to map to product GTIN.<br />
+                            It should be the manufacturer GTIN, usually it cooresponds to product EAN.","Select the attribute to map to product GTIN.<br />
+                            It should be the manufacturer GTIN, usually it cooresponds to product EAN."
+"Product MPN","Product MPN"
+"Select the attribute to map to product MPN.<br />
+                            It is used if the product has not a GTIN assigned by manufacturer.","Select the attribute to map to product MPN.<br />
+                            It is used if the product has not a GTIN assigned by manufacturer."
+"Shipping cost","Shipping cost"
+"Shipping cost by Magento attribute","Shipping cost by Magento attribute"
+"From price (first range)","From price (first range)"
+"Cost (first range)","Cost (first range)"
+"Price ranges (Further price ranges)","Price ranges (Further price ranges)"
+"Add further price ranges, if it needed.","Add further price ranges, if it needed."
+"From weight (first range)","From weight (first range)"
+"Weight ranges (Further weight ranges)","Weight ranges (Further weight ranges)"
+"Add further weight ranges, if it needed.","Add further weight ranges, if it needed."
+"Notifications Parameters","Notifications Parameters"
+"Notifier Enable","Notifier Enable"
+"Email recipient(s)","Email recipient(s)"
+"Add email recipient(s).","Add email recipient(s)."
+"Feed Generation Parameters","Feed Generation Parameters"
+"Feed Generation Status","Feed Generation Status"
+"Feed Generation Frequency","Feed Generation Frequency"
+"Insert the feed generation frequency in cron time string format.<br />
+							For example: <b>0 1 * * *</b> -> to generate the feed at 1:00 am.","Insert the feed generation frequency in cron time string format.<br />
+							For example: <b>0 1 * * *</b> -> to generate the feed at 1:00 am."

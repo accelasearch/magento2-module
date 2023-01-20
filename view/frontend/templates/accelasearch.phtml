@@ -1,0 +1,34 @@
+<?php
+
+use Magento\Framework\View\Element\Template;
+use AccelaSearch\Search\ViewModel\ConfigHelper;
+use AccelaSearch\Search\ViewModel\UserHelper;
+
+/** @var Template $block */
+/** @var ConfigHelper $configHelper */
+/** @var UserHelper $userHelper */
+
+$configHelper = $block->getConfigHelper();
+$userHelper = $block->getUserHelper();
+$js_url = $configHelper->getAccelasearchUrl();
+$css_url = $configHelper->getCssUrl();
+$asConfig = [];
+if ($configHelper->isPublishedVisitorType()) {
+    $asConfig["visitorType"] = $userHelper->getCustomerGroup();
+}
+if ($configHelper->isPublishedCurrencyCode()) {
+    $asConfig["currencyCode"] = $userHelper->getCurrencyCode();
+}
+?>
+<?php if ($css_url) : ?>
+    <link rel="stylesheet" type="text/css" media="all" href="<?= $css_url ?>"/>
+<?php endif; ?>
+<?php if ($js_url) : ?>
+    <script src="<?= $js_url ?>"></script>
+<?php endif; ?>
+
+<?php if ($userHelper->isLoggedIn()): ?>
+    <script>
+        window.AS_ADVANCED_CONFIG = <?= json_encode($asConfig)?>
+    </script>
+<?php endif; ?>

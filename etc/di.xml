@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <preference for="AccelaSearch\Search\Api\DynamicPriceInterface"
+                type="AccelaSearch\Search\Service\DynamicPrice"/>
+
+    <!-- Log custom management :: Start -->
+    <type name="AccelaSearch\Search\Logger\Handler">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">
+                Magento\Framework\Filesystem\Driver\File
+            </argument>
+        </arguments>
+    </type>
+    <type name="AccelaSearch\Search\Logger\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">logger</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="system" xsi:type="object">AccelaSearch\Search\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="AccelaSearch\Search\Logger\VerboseHandler">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">
+                Magento\Framework\Filesystem\Driver\File
+            </argument>
+        </arguments>
+    </type>
+    <type name="AccelaSearch\Search\Logger\Verbose">
+        <arguments>
+            <argument name="name" xsi:type="string">logger</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="system" xsi:type="object">AccelaSearch\Search\Logger\VerboseHandler</item>
+            </argument>
+        </arguments>
+    </type>
+    <!-- Log custom management :: End -->
+
+    <type name="Magento\Framework\Console\CommandListInterface">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="accelasearch_search__generate_feed" xsi:type="object">
+                    AccelaSearch\Search\Console\Command\FeedGenerationRun
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+</config>

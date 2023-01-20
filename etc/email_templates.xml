@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * AccelaSearch
+ *
+ * @category   AccelaSearch
+ * @package    AccelaSearch_Search
+ * @copyright  Copyright (c) 2020 AccelaSearch
+ */
+-->
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
+    <template
+            id="accelasearch_feed_notifications"
+            label="AccelaSearch Google Shopping Notifications"
+            file="accelasearch_feed_notifications.html"
+            type="html"
+            module="AccelaSearch_Search"
+            area="adminhtml"
+    />
+</config>

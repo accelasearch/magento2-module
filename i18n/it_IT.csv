@@ -1,0 +1,73 @@
+"Schedule Feed Generation","Programma Generazione Feed"
+"File lock exists","Il file di lock esiste"
+"From Price","Dal prezzo"
+"Shipping Cost","Costi di spedizione"
+"Add Price Range","Aggiungi Fascia di Prezzo"
+Recipient(s),Destinatario/i
+"Add Recipient","Aggiungi Destinatario"
+"From Weight","Dal peso"
+"Add Weight Range","Aggiungi Fascio di Peso"
+"Feed Generation scheduled!","Generazione Feed programmata!"
+"'Feed Generation not scheduled ' . ""message""","'Generazione Feed non programmata ' . ""message"""
+"jobCode not set!","jobCode non impostato!"
+"""Get lock file path error: "" .","""Errore nel reperire il percorso del file di lock: "" ."
+"""Get log file path error: "" .","""Errore nel reperire il percorso del file di log: "" ."
+"-- NO CATEGORY --","-- NESSUNA CATEGORIA --"
+.,.
+"by Magento attribute","tramite attributo Magento"
+"by price","tramite prezzo"
+"by weight","tramite peso"
+"It is not possible to save the cron expression.","Non e' possibile salvare l'espressione del cron."
+"%store_name: AccelaSearch Google Shopping","%store_name: AccelaSearch Google Shopping"
+"AccelaSearch GoogleShopping Result","AccelaSearch GoogleShopping Risultato"
+"It is possible to consult log file in this directory: ","It is possible to consult log file in this directory: "
+"If Notifier is enabled, it needs to add at least an e-mail recipient.","If Notifier is enabled, it needs to add at least an e-mail recipient."
+"If Feed Generation is enabled, it need to set a valid frequency.","If Feed Generation is enabled, it need to set a valid frequency."
+AccelaSearch,AccelaSearch
+"Google Shopping","Google Shopping"
+"General Parameters","Parametri Generali"
+Enable,Abilita
+"Feed files directory","Cartella dei file Feed"
+"The directory where the feed files are stored.<br />
+                            <u>Remember to put '/' before the directory name</u>.","The directory where the feed files are stored.<br />
+                            <u>Remember to put '/' before the directory name</u>."
+Filters,Filtri
+"Categories to exclude","Categorie da escludere"
+"Select the categories to exclude.<br />
+                            The products belonging to those categories will be excluded during feed generation process.","Seleziona le categorie da escludere.<br />
+                            I prodotti appartenenti a queste categorie saranno esclusivi durante il processo di generazione del feed."
+"Feed Fields","Campi del Feed"
+"Product Description","Descrizione del prodotto"
+"Select the attribute to map to product description.","Seleziona l'attributo che mappa la descrizione del prodotto."
+"Product Brand","Marca del prodotto"
+"Select the attribute to map to product brand.","Seleziona l'attributo che mappa la marca del prodotto."
+"Brand Name","Nome della marca"
+"Product GTIN","GTIN del prodotto"
+"Select the attribute to map to product GTIN.<br />
+                            It should be the manufacturer GTIN, usually it cooresponds to product EAN.","Select the attribute to map to product GTIN.<br />
+                            It should be the manufacturer GTIN, usually it cooresponds to product EAN."
+"Product MPN","MPN del prodotto"
+"Select the attribute to map to product MPN.<br />
+                            It is used if the product has not a GTIN assigned by manufacturer.","Select the attribute to map to product MPN.<br />
+                            It is used if the product has not a GTIN assigned by manufacturer."
+"Shipping cost","Costi di spedizione"
+"Shipping cost by Magento attribute","Shipping cost by Magento attribute"
+"From price (first range)","From price (first range)"
+"Cost (first range)","Cost (first range)"
+"Price ranges (Further price ranges)","Price ranges (Further price ranges)"
+"Add further price ranges, if it needed.","Add further price ranges, if it needed."
+"From weight (first range)","From weight (first range)"
+"Weight ranges (Further weight ranges)","Weight ranges (Further weight ranges)"
+"Add further weight ranges, if it needed.","Add further weight ranges, if it needed."
+"Notifications Parameters","Parametri Notifiche"
+"Notifier Enable","Abilita Notificatore"
+"Email recipient(s)","Email del/i destinatario/i"
+"Add email recipient(s).","Add email recipient(s)."
+"Feed Generation Parameters","Feed Generation Parameters"
+"Feed Generation Status","Stato Generazione Feed"
+"Feed Generation Frequency","Frequenza Generazione Feed"
+"Insert the feed generation frequency in cron time string format.<br />
+							For example: <b>0 1 * * *</b> -> to generate the feed at 1:00 am.","Insert the feed generation frequency in cron time string format.<br />
+							For example: <b>0 1 * * *</b> -> to generate the feed at 1:00 am."
+"Select the stock behavior. <br/> Select in stock for export feed with products in stock or select in stock and out of stock for export both","Seleziona il comportamento per lo stock <br/> Selezione in stock per esportare il con i prodotti in stock o selezione in stock e out of stock per esportare il feed con entrambi"
+"Code ISO 3166 alpha 2 of country example: IT","Codice ISO 3166 alpha 2 esempio: IT"

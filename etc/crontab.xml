@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="default">
+        <job name="accelasearch_search_feedgeneration"
+             instance="AccelaSearch\Search\Cron\FeedGeneration"
+             method="generateFeed">
+            <!-- <schedule>*/5 * * * *</schedule> -->
+            <config_path>accelasearch_search/sync/feed_generation_frequency</config_path>
+        </job>
+    </group>
+</config>

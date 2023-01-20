@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="after.body.start">
+            <block name="accelasearch" class="Magento\Framework\View\Element\Template" template="AccelaSearch_Search::accelasearch.phtml" before="-">
+                <arguments>
+                    <argument name="config_helper" xsi:type="object">AccelaSearch\Search\ViewModel\ConfigHelper</argument>
+                    <argument name="user_helper" xsi:type="object">AccelaSearch\Search\ViewModel\UserHelper</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

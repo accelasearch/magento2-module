@@ -1,0 +1,11 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="AccelaSearch_Search::accelasearch" title="Accelasearch" translate="title" sortOrder="10">
+                    <resource id="AccelaSearch_Search::dynamicprices" title="Dynamic Prices" translate="title" sortOrder="10"/>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>

@@ -1,0 +1,41 @@
+<?php /** @var $block \AccelaSearch\Search\Block\System\Config\FeedGenerationButton */ ?>
+    <script>
+        require([
+            'jquery',
+            'prototype'
+        ], function(jQuery){
+
+            jQuery('#generate_feed').click(function () {
+                jQuery('body').trigger('processStart');
+                var params = {};
+                new Ajax.Request('<?php echo $block->getAjaxUrl() ?>', {
+                    method:         'get',
+                    parameters:     params,
+                    loaderArea:     false,
+                    asynchronous:   true,
+                    dataType:       'text',
+                    onSuccess: function(transport) {
+                        jQuery('body').trigger('processStop');
+                        var response = false;
+                        if (transport && transport.responseText) {
+                            try {
+                                response = JSON.parse(transport.responseText);
+                            } catch (e) {
+                                console.warn('An error occured while parsing response');
+                            }
+                        }
+                        if (response && response.messages) {
+                            alert(response.messages);
+                        }
+                    },
+                    onFailure: function() {
+                        jQuery('body').trigger('processStop');
+                        alert('Feed generation schedulation error!');
+                    }
+                });
+            });
+        });
+    </script>
+
+<?php
+echo $block->getButtonHtml();

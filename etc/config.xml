@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <accelasearch_search>
+            <feed>
+                <status>0</status>
+                <feed_directory>/feed</feed_directory>
+            </feed>
+            <fields>
+                <shipping_by_price_first_price>0</shipping_by_price_first_price>
+                <shipping_by_price_first_cost>0</shipping_by_price_first_cost>
+                <shipping_by_weight_first_weight>0</shipping_by_weight_first_weight>
+                <shipping_by_weight_first_cost>0</shipping_by_weight_first_cost>
+            </fields>
+            <notifications>
+                <notifier_status>0</notifier_status>
+            </notifications>
+            <sync>
+                <feed_generation_status>0</feed_generation_status>
+                <feed_generation_frequency>0 1 * * *</feed_generation_frequency>
+            </sync>
+            <dynamicprice>
+                <listing_price>price</listing_price>
+                <publish_visitor_type>1</publish_visitor_type>
+                <publish_currency_code>1</publish_currency_code>
+            </dynamicprice>
+        </accelasearch_search>
+    </default>
+</config>

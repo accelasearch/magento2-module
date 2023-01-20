@@ -1,0 +1,466 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="AccelaSearch" translate="label" sortOrder="1">
+            <label>AccelaSearch</label>
+        </tab>
+        <section id="accelasearch_search" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+            <tab>AccelaSearch</tab>
+            <label>Search</label>
+            <resource>AccelaSearch_Search::accelasearch</resource>
+            <group id="accelasearch" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Search</label>
+                <field id="accelasearch_url" translate="label" type="text" sortOrder="1" showInDefault="1" showInStore="1" showInWebsite="1">
+                    <label>Search Url</label>
+                </field>
+                <field id="accelasearch_css_url" translate="label" type="text" sortOrder="1" showInDefault="1" showInStore="1" showInWebsite="1">
+                    <label>Accelasearch CSS Url</label>
+                    <comment>Leave empty to disable</comment>
+                </field>
+            </group>
+            <!-- Group: feed Parameters -->
+            <group id="feed" translate="label comment" type="text" sortOrder="1"
+                   showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Feed Configuration</label>
+                <comment>
+                    <![CDATA[<u>
+                        Check the specific store view configuration.
+                    </u>]]>
+                </comment>
+                <!-- Status -->
+                <field id="status" translate="label" type="select" sortOrder="1"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Accelasearch feed status</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                </field>
+                <!-- Feed file directory -->
+                <field id="feed_directory" translate="label comment" type="text" sortOrder="2"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Feed files directory</label>
+
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                    </depends>
+
+                    <comment>
+                        <![CDATA[The directory where the feed files are stored.<br />
+                            <u>Remember to put '/' before the directory name</u>.
+                        ]]>
+                    </comment>
+                </field>
+                <!-- Feed file directory -->
+                <field id="custom_base_url" translate="label comment" type="text" sortOrder="2"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Custom base url</label>
+
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                    </depends>
+
+                    <comment>
+                        <![CDATA[This base url will replace product url and image one in the feed with / at end ]]>
+                    </comment>
+                </field>
+                <!-- Status -->
+                <field id="use_vsf" translate="label" type="select" sortOrder="1"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Using Vue Storefront 1.x ?</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+
+                    <comment>
+                        <![CDATA[Set yes just if you use M2 in pwa way and VSF ]]>
+                    </comment>
+                </field>
+                <field id="vsf_resize_x" translate="label comment" type="text" sortOrder="2"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>X image resolution in VSF</label>
+
+                    <depends>
+                        <field id="accelasearch_search/feed/use_vsf">1</field>
+                    </depends>
+
+                    <comment>
+                        <![CDATA[It will used in image url generation /img/{x}/{y}/resize/{url mage}]]>
+                    </comment>
+                </field>
+                <field id="vsf_resize_y" translate="label comment" type="text" sortOrder="2"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Y image resolution in VSF</label>
+
+                    <depends>
+                        <field id="accelasearch_search/feed/use_vsf">1</field>
+                    </depends>
+
+                    <comment>
+                        <![CDATA[It will used in image url generation /img/{x}/{y}/resize/{url mage}]]>
+                    </comment>
+                </field>
+                <field id="categories_behavior" translate="label" type="select" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Set behavior of category</label>
+                    <source_model>AccelaSearch\Search\Model\Config\Source\ExcludedIncluded</source_model>
+                    <comment>Set Included for include categories or excluded for exclude categories</comment>
+                    <validate>required-entry</validate>
+                    <depends>
+                        <field id="accelasearch_search/general/status">1</field>
+                    </depends>
+                </field>
+                <!-- Categories to exclude -->
+                <field id="categories_selected" translate="label comment" type="multiselect" sortOrder="9"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Categories</label>
+                    <source_model>AccelaSearch\Search\Model\Config\Backend\Categories</source_model>
+                    <comment>
+                        <![CDATA[Select the categories.<br />
+                            The products belonging to those categories will be excluded or included (depends on prevous choice) during feed generation process.
+                        ]]>
+                    </comment>
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                        <field id="accelasearch_search/feed/categories_behavior" separator=",">0,1</field>
+                    </depends>
+                </field>
+
+                <field id="categories_excluded" translate="label comment" type="multiselect" sortOrder="9"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Exclude from path generation</label>
+                    <source_model>AccelaSearch\Search\Model\Config\Backend\Categories</source_model>
+                    <comment>
+                        <![CDATA[Select the categories.<br />
+                            This categories will be ignored when generating the product category path
+                        ]]>
+                    </comment>
+                </field>
+            </group>
+
+            <!-- Group: Filters -->
+            <group id="filters" translate="label" type="text" sortOrder="2"
+                   showInDefault="0" showInWebsite="1" showInStore="1">
+                <label>Feed Filters</label>
+                <!-- Categories to exclude -->
+                <field id="categories_excluded" translate="label comment" type="multiselect" sortOrder="6"
+                       showInDefault="0" showInWebsite="1" showInStore="1">
+                    <label>Categories to exclude</label>
+                    <source_model>AccelaSearch\Search\Model\Config\Backend\CategoriesExcluded</source_model>
+
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                    </depends>
+
+                    <comment>
+                        <![CDATA[Select the categories to exclude.<br />
+                            The products belonging to those categories will be excluded during feed generation process.
+                        ]]>
+                    </comment>
+                </field>
+                <field id="stock_behavior" translate="label comment" type="multiselect" sortOrder="6"
+                       showInDefault="0" showInWebsite="1" showInStore="1">
+                    <label>Stock</label>
+                    <source_model>AccelaSearch\Search\Model\Config\Source\StockOutOfStock</source_model>
+
+                    <validate>required-entry</validate>
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                    </depends>
+
+                    <comment>
+                        <![CDATA[Select the stock behavior. <br/> Select in stock for export feed with products in stock or select in stock and out of stock for export both]]>
+                    </comment>
+                </field>
+            </group>
+
+            <!-- Group: Feed Fields -->
+            <group id="fields" translate="label" type="text" sortOrder="3"
+                   showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Feed Fields</label>
+
+                <!-- Product Description -->
+                <field id="product_description" translate="label comment" type="select" sortOrder="1"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Product Description</label>
+                    <source_model>AccelaSearch\Search\Model\Config\Backend\AttributeTextareaType</source_model>
+
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                    </depends>
+
+                    <comment>
+                        <![CDATA[Select the attribute to map to product description.]]>
+                    </comment>
+                </field>
+
+                <!-- Product Brand -->
+                <field id="product_brand" translate="label comment" type="select" sortOrder="2"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Product Brand</label>
+                    <source_model>AccelaSearch\Search\Model\Config\Backend\BrandAttribute</source_model>
+
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                    </depends>
+
+                    <comment>
+                        <![CDATA[Select the attribute to map to product brand.]]>
+                    </comment>
+                </field>
+                <!-- Brand Name -->
+                <field id="brand_name" translate="label" type="text" sortOrder="3"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Brand Name</label>
+
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                        <field id="accelasearch_search/fields/product_brand">free_text</field>
+                    </depends>
+
+                    <comment>
+                        <![CDATA[This name will be assigned to all products.]]>
+                    </comment>
+                </field>
+                <!-- Product GTIN -->
+                <field id="product_gtin" translate="label comment" type="select" sortOrder="4"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Product GTIN</label>
+                    <source_model>AccelaSearch\Search\Model\Config\Backend\AttributeTextType</source_model>
+
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                    </depends>
+
+                    <comment>
+                        <![CDATA[Select the attribute to map to product GTIN.<br />
+                            It should be the manufacturer GTIN, usually it cooresponds to product EAN.
+                        ]]>
+                    </comment>
+                </field>
+                <!-- Product MPN -->
+                <field id="product_mpn" translate="label comment" type="select" sortOrder="5"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Product MPN</label>
+                    <source_model>AccelaSearch\Search\Model\Config\Backend\AttributeTextType</source_model>
+
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                    </depends>
+                </field>
+
+                <!-- Shipping Cost By -->
+                <field id="shipping_cost" translate="label" type="select" sortOrder="6"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Shipping cost</label>
+                    <source_model>AccelaSearch\Search\Model\Config\Backend\ShippingCost</source_model>
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                    </depends>
+                </field>
+
+                <!-- Shipping Cost by Magento price attribute -->
+                <field id="shipping_attribute" translate="label" type="select" sortOrder="7"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Shipping cost by Magento attribute</label>
+                    <source_model>AccelaSearch\Search\Model\Config\Backend\AttributePriceType</source_model>
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                        <field id="accelasearch_search/fields/shipping_cost">by_attribute</field>
+                    </depends>
+                </field>
+
+                <!-- Shipping Cost by price -->
+                <!-- Shipping Cost by price: From price (first range) -->
+                <field id="shipping_by_price_first_price" translate="label" type="text" sortOrder="8"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>From price (first range)</label>
+                    <validate>required-entry</validate>
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                        <field id="accelasearch_search/fields/shipping_cost">by_price</field>
+                    </depends>
+                </field>
+                <!-- Shipping Cost by price: Cost (first range) -->
+                <field id="shipping_by_price_first_cost" translate="label" type="text" sortOrder="9"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Cost (first range)</label>
+                    <validate>required-entry</validate>
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                        <field id="accelasearch_search/fields/shipping_cost">by_price</field>
+                    </depends>
+                </field>
+                <!-- Shipping Cost by price: price ranges -->
+                <field id="shipping_by_price_ranges" translate="label comment" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Price ranges (Further price ranges)</label>
+                    <frontend_model>AccelaSearch\Search\Block\System\Config\Price</frontend_model>
+                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
+                    <comment>
+                        <![CDATA[Add further price ranges, if it needed.]]>
+                    </comment>
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                        <field id="accelasearch_search/fields/shipping_cost">by_price</field>
+                    </depends>
+                </field>
+
+                <!-- Shipping by weight -->
+                <!-- Shipping Cost by weight: From weight (first range) -->
+                <field id="shipping_by_weight_first_weight" translate="label" type="text" sortOrder="11"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>From weight (first range)</label>
+                    <validate>required-entry</validate>
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                        <field id="accelasearch_search/fields/shipping_cost">by_weight</field>
+                    </depends>
+                </field>
+                <field id="shipping_by_weight_first_cost" translate="label" type="text" sortOrder="12"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Cost (first range)</label>
+                    <validate>required-entry</validate>
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                        <field id="accelasearch_search/fields/shipping_cost">by_weight</field>
+                    </depends>
+                </field>
+                <field id="shipping_by_weight_ranges" translate="label comment" sortOrder="13"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Weight ranges (Further weight ranges)</label>
+                    <frontend_model>AccelaSearch\Search\Block\System\Config\Weight</frontend_model>
+                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
+                    <comment>
+                        <![CDATA[Add further weight ranges, if it needed.]]>
+                    </comment>
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                        <field id="accelasearch_search/fields/shipping_cost">by_weight</field>
+                    </depends>
+                </field>
+                <field id="shipping_country" translate="label" type="text" sortOrder="9"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Country</label>
+                    <comment>
+                        <![CDATA[Code ISO 3166 alpha 2 of country example: IT]]>
+                    </comment>
+                    <validate>required-entry</validate>
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                    </depends>
+                </field>
+                <!-- Shipping Cost by price: price ranges -->
+                <field id="custom_fields" translate="label comment" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Custom fields mapping</label>
+                    <frontend_model>AccelaSearch\Search\Block\System\Config\CustomFields</frontend_model>
+                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
+                </field>
+                <field id="custom_multiple_fields" translate="label comment" sortOrder="20"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Multiple fields mapping</label>
+                    <frontend_model>AccelaSearch\Search\Block\System\Config\CustomFields</frontend_model>
+                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
+                </field>
+            </group>
+
+
+            <!-- Group: Feed Generation Parameters -->
+            <group id="sync" translate="label" type="text" sortOrder="4"
+                   showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Feed Generation Parameters</label>
+                <comment>
+                    <![CDATA[
+                        <u>It needs to enable <i>Feed Generation Status</i> and to set a valid
+                        <i>Feed Generation Frequency</i> to make the extension work.</u>
+                    ]]>
+                </comment>
+
+                <!-- Feed Generation Status -->
+                <field id="feed_generation_status" translate="label" type="select" sortOrder="1"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Feed Generation Status</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                    <backend_model>AccelaSearch\Search\Model\Config\Backend\SyncFeedFreq</backend_model>
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                    </depends>
+                </field>
+                <!-- Feed Generation Frequency -->
+                <field id="feed_generation_frequency" translate="label comment" type="text" sortOrder="2"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Feed Generation Frequency</label>
+                    <validate>accelasearch_search-feed-generation-frequency</validate>
+                    <comment>
+                        <![CDATA[
+                            Insert the feed generation frequency in cron time string format.<br />
+							For example: <b>0 1 * * *</b> -> to generate the feed at 1:00 am.
+                        ]]>
+                    </comment>
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                        <field id="accelasearch_search/sync/feed_generation_status">1</field>
+                    </depends>
+                </field>
+                <!-- Feed Generation Button -->
+                <field id="feed_generation_button" translate="label" type="button" sortOrder="3"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <frontend_model>AccelaSearch\Search\Block\System\Config\FeedGenerationButton</frontend_model>
+                </field>
+            </group>
+
+            <!-- Group: Notifications Parameters -->
+            <group id="notifications" translate="label" type="text" sortOrder="5"
+                   showInDefault="1" showInWebsite="0" showInStore="1">
+                <label>Notifications Parameters</label>
+                <!-- Notifier Status -->
+                <field id="notifier_status" translate="label" type="select" sortOrder="1"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Notifier Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <validate>accelasearch_search-notifications</validate>
+                    <comment>
+                        <![CDATA[Enable the extension to send notifications.]]>
+                    </comment>
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                    </depends>
+                </field>
+                <!-- Notifier Recepients -->
+                <field id="notifier_recipients" translate="label comment" sortOrder="2"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Recipient(s) email</label>
+                    <frontend_model>AccelaSearch\Search\Block\System\Config\Recipient</frontend_model>
+                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
+                    <comment>
+                        <![CDATA[Add recipient(s) email.]]>
+                    </comment>
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                        <field id="accelasearch_search/notifications/notifier_status">1</field>
+                    </depends>
+                </field>
+            </group>
+
+            <!-- Group: Dynamic Price Parameters -->
+            <group id="dynamicprice" translate="label" type="text" sortOrder="6"
+                   showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Dynamic Price</label>
+                <field id="listing_price" translate="label" type="select" sortOrder="1"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Listing Price</label>
+                    <source_model>AccelaSearch\Search\Block\System\Config\ListingPrice</source_model>
+                </field>
+                <field id="publish_visitor_type" translate="label" type="select" sortOrder="2"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Publish Visitor Type</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="publish_currency_code" translate="label" type="select" sortOrder="3"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Publish Currency Code</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="cache_lifetime" type="text" translate="label" sortOrder="3040" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Cache Lifetime</label>
+                    <validate>integer</validate>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

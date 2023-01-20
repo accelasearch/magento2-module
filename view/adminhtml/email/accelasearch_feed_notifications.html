@@ -1,0 +1,18 @@
+<!--@subject {{trans "%store_name: AccelaSearch Google Shopping" store_name=$store.getFrontendName()}} @-->
+<!--@vars {
+"var logfile":"logFile"
+} @-->
+<table>
+    <tr class="email-info">
+        <td>
+            <strong>{{trans "AccelaSearch feed Result"}}</strong>
+        </td>
+    </tr>
+    {{layout handle="email_notifications" notifications=$notifications area="adminhtml"}}
+    <tr>
+        <td>
+            {{trans "It is possible to consult log file in this directory: "}}
+            {{var logfile}}
+        </td>
+    </tr>
+</table>
