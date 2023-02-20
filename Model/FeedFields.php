@@ -600,7 +600,26 @@ class FeedFields
                     $this->productAttributes[$attributeCode] = $this->attributeRepository->get($attributeCode);
                 }
                 if ($this->productAttributes[$attributeCode]->getFrontendInput() === "select" || $this->productAttributes[$attributeCode]->getFrontendInput() === "multiselect") {
-                    $result = $this->_product->getAttributeText($attributeCode);
+                    //$result = $this->_product->getAttributeText($attributeCode);
+                    $result = $this->_product->getResource()
+                        ->getAttribute($attributeCode)
+                        ->setStoreId($this->_storeId)
+                        ->getFrontend()
+                        ->getValue($this->_product);
+
+                    $isMultiple = false;
+                    if (strpos($result, ',') !== false) {
+                        $isMultiple = true;
+                        $result = explode(',', $result);
+                    }
+
+                    if ($isMultiple) {
+                        $values = [];
+                        foreach ($result as $item) {
+                            $values[] = trim($item);
+                        }
+                        $result = $values;
+                    }
                 }
             } catch (Exception $exception) {
                 $this->_verboseLogger->error("Error loading attribute with code :" . $attributeCode);
