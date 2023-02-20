@@ -234,7 +234,11 @@ class FeedFields
         $parent = " > ";
         $separator = ";";
 
-        $categories = $this->_helper->getConfig(Constants::PATH_CATEGORIES_EXCLUDED);
+        $categories = $this->_helper->getConfig(
+            Constants::PATH_CATEGORIES_EXCLUDED,
+            ScopeInterface::SCOPE_STORE,
+            $storeView->getId()
+        );
         $categoriesArray = explode(",", $categories);
         $exlude = '';
 
@@ -278,10 +282,12 @@ class FeedFields
 
 
             // get categories collection
-            $sqlGetCategoryPathNamesSel = "SELECT ccev.value as name
+            $sqlGetCategoryPathNamesSel = "SELECT coalesce(ccev_lang.value,ccev.value) as name
                     FROM $tableCatalogCategoryEntity as cce
                     JOIN $tableCatalogCategoryEntityVarchar as ccev
                     ON cce.entity_id = ccev.entity_id AND ccev.attribute_id = " . $this->_category_name_attribute . " AND ccev.store_id = 0
+                    left JOIN $tableCatalogCategoryEntityVarchar as ccev_lang
+                    ON cce.entity_id = ccev_lang.entity_id AND ccev_lang.attribute_id = " . $this->_category_name_attribute . " AND ccev_lang.store_id = " . $storeView->getStoreId() . "
                     WHERE level >= 2
                     AND ccev.entity_id IN($categoryPathArray)";
             $this->_logger->info("Query categories collection " . $sqlGetCategoryPathNamesSel);
@@ -594,7 +600,26 @@ class FeedFields
                     $this->productAttributes[$attributeCode] = $this->attributeRepository->get($attributeCode);
                 }
                 if ($this->productAttributes[$attributeCode]->getFrontendInput() === "select" || $this->productAttributes[$attributeCode]->getFrontendInput() === "multiselect") {
-                    $result = $this->_product->getAttributeText($attributeCode);
+                    //$result = $this->_product->getAttributeText($attributeCode);
+                    $result = $this->_product->getResource()
+                        ->getAttribute($attributeCode)
+                        ->setStoreId($this->_storeId)
+                        ->getFrontend()
+                        ->getValue($this->_product);
+
+                    $isMultiple = false;
+                    if (strpos($result, ',') !== false) {
+                        $isMultiple = true;
+                        $result = explode(',', $result);
+                    }
+
+                    if ($isMultiple) {
+                        $values = [];
+                        foreach ($result as $item) {
+                            $values[] = trim($item);
+                        }
+                        $result = $values;
+                    }
                 }
             } catch (Exception $exception) {
                 $this->_verboseLogger->error("Error loading attribute with code :" . $attributeCode);
