@@ -231,17 +231,17 @@ class FeedProducts
 
             . // checking the product price on 'catalog_product_index_price' table
             "LEFT JOIN $tableCatalogProductEntityDecimal AS cped
-            ON cpe.entity_id = cped.entity_id AND cped.attribute_id = 77 "
+            ON cpe.entity_id = cped.entity_id AND cped.attribute_id = {$this->_helper->getAttributeIdByCode('price')} "
 
             . // checking the product stock on 'cataloginventory_stock_item' table
             "LEFT JOIN $tableCataloginventoryStockItem csi
             ON csi.product_id = cpe.entity_id ";
 
-            /*
-            . // checking the categories product on 'catalog_category_product' table
-            "JOIN $tableCatalogCategoryProduct as ccp
-            ON ccp.product_id = cpe.entity_id ";
-            */
+        /*
+        . // checking the categories product on 'catalog_category_product' table
+        "JOIN $tableCatalogCategoryProduct as ccp
+        ON ccp.product_id = cpe.entity_id ";
+        */
 
         // checking 'status' and 'visibility'
         $sqlFeedProductsSel .= "
