@@ -2,6 +2,9 @@
 namespace AccelaSearch\Search\Helper;
 
 use AccelaSearch\Search\Constants;
+use Magento\Catalog\Model\Product;
+use Magento\Eav\Api\AttributeRepositoryInterface;
+use Magento\Eav\Model\AttributeRepository;
 use Magento\Framework\App\Config;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\Exception\FileSystemException;
@@ -41,6 +44,10 @@ class Data extends AbstractHelper
      * @var Json
      */
     private $jsonSerializer;
+    /**
+     * @var AttributeRepositoryInterface
+     */
+    protected $attributeRepository;
 
     /**
      * Data constructor.
@@ -58,7 +65,8 @@ class Data extends AbstractHelper
         ResourceConnection $resource,
         DirectoryList $directoryList,
         Logger $logger,
-        Json $jsonSerializer
+        Json $jsonSerializer,
+        AttributeRepositoryInterface $attributeRepository
     )
     {
         $this->_storeManager = $storeManager;
@@ -66,7 +74,18 @@ class Data extends AbstractHelper
         $this->_directoryList = $directoryList;
         $this->_logger = $logger;
         $this->jsonSerializer = $jsonSerializer;
+        $this->_attributeRepository = $attributeRepository;
         parent::__construct($context);
+    }
+
+    /**
+     * @param $code
+     * @return int|null
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getAttributeIdByCode($code)
+    {
+        return $this->_attributeRepository->get(Product::ENTITY, $code)->getAttributeId();
     }
 
     /**
