@@ -188,10 +188,7 @@ class FeedFile
                 }
                 /* description (required) */
                 $productDescription = $this->_feedFields->getDescription();
-                if (!$productDescription) {
-                    $this->_logger->warning("product $productSku skipped Description missing " . $productDescription);
-                    continue;
-                }
+
                 /* link (required) */
                 $productLink = $this->_feedFields->getLink();
                 if (!$productLink) {

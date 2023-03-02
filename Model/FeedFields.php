@@ -38,7 +38,7 @@ class FeedFields
     protected $_category_entity_type;
     protected $_category_name_attribute;
     // secure base url
-    protected $_secureBaseUrl;
+    protected $_secureBaseUrl = array();
     // array of simple parent products
     private $_parentsArray = array();
 
@@ -360,46 +360,41 @@ class FeedFields
             $storeId
         );
 
-        if ($this->_product->getData($productDescriptionAttribute)
-            && $this->_product->getData($productDescriptionAttribute) != '') {
-            $productDescription = substr(
-                html_entity_decode(
-                    $this->_product->getData($productDescriptionAttribute),
-                    ENT_QUOTES
-                ),
-                0,
-                5000
-            ); // characters truncate
-            $productDescription = strip_tags($productDescription);
-            $productDescription = str_replace(
-                ';',
-                ',',
+        $productDescription = substr(
+            html_entity_decode(
+                $this->_product->getData($productDescriptionAttribute),
+                ENT_QUOTES
+            ),
+            0,
+            5000
+        ); // characters truncate
+        $productDescription = strip_tags($productDescription);
+        $productDescription = str_replace(
+            ';',
+            ',',
+            str_replace(
+                '|',
+                ' ',
                 str_replace(
-                    '|',
+                    '#',
                     ' ',
                     str_replace(
-                        '#',
-                        ' ',
+                        chr(9),
+                        '',
                         str_replace(
-                            chr(9),
+                            chr(13),
                             '',
                             str_replace(
-                                chr(13),
+                                chr(10),
                                 '',
-                                str_replace(
-                                    chr(10),
-                                    '',
-                                    $productDescription
-                                )
+                                $productDescription
                             )
                         )
                     )
                 )
-            ); // deleting special characters
-            $productDescription = mb_convert_encoding($productDescription, 'UTF-8', 'UTF-8');
-        } else {
-            $this->_verboseLogger->error("No Description found for product:" . $this->_productSku);
-        }
+            )
+        ); // deleting special characters
+        $productDescription = mb_convert_encoding($productDescription, 'UTF-8', 'UTF-8');
 
         return $productDescription;
     }
@@ -898,14 +893,14 @@ class FeedFields
      */
     private function _getSecureBaseUrl($storeId = 0)
     {
-        if (!$this->_secureBaseUrl) {
-            $this->_secureBaseUrl = $this->_helper->getConfig(
+        if (!array_key_exists($storeId, $this->_secureBaseUrl)) {
+            $this->_secureBaseUrl[$storeId] = $this->_helper->getConfig(
                 Constants::PATH_SECURE_BASEURL,
                 ScopeInterface::SCOPE_STORE,
                 $storeId
             );
         }
-        return $this->_secureBaseUrl;
+        return $this->_secureBaseUrl[$storeId];
     }
 
     /**
