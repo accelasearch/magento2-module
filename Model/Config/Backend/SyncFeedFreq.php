@@ -40,9 +40,9 @@ class SyncFeedFreq extends Value
         Registry $registry,
         ScopeConfigInterface $config,
         TypeListInterface $cacheTypeList,
+        ValueFactory $valueFactory,
         ?AbstractResource $resource = null,
         ?AbstractDb $resourceCollection = null,
-        ValueFactory $valueFactory,
         array $data = []
     )
     {
