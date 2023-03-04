@@ -1,4 +1,4 @@
-[![N|Solid](https://accelasearch.com/images/as-logo.svg)](https://accelasearch.com/)
+![alt text](https://accelasearch.com/wp-content/uploads/2022/11/Frame-13923578.png "AccelaSearch")
 # Accelasearch Magento 2
 This document is available in [English](README.md), [Italian](README.it.md).
 
