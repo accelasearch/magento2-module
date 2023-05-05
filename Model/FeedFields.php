@@ -32,6 +32,7 @@ class FeedFields
     // product
     protected $_productSku;
     protected $_baseUrl;
+    protected $_imageBaseUrl;
     protected $_vsfResizeX;
     protected $_vsfResizeY;
     //category
@@ -136,6 +137,7 @@ class FeedFields
         $this->_storeId = $storeId;
         // Secure Base Url
         $this->_baseUrl = $this->_getSecureBaseUrl($storeId);
+        $this->_imageBaseUrl = $this->_getSecureBaseUrl();
 
         $customBaseUrl = $this->_helper->getConfig(
             Constants::PATH_FEED_CUSTOM_BASE_URL,
@@ -507,10 +509,10 @@ class FeedFields
         if ($productImage) {
 
             if ($this->_vsfResizeX && $this->_vsfResizeY) {
-                return $this->_baseUrl . "img/" . $this->_vsfResizeX . "/" . $this->_vsfResizeY . "/resize" . $productImage;
+                return $this->_imageBaseUrl . "img/" . $this->_vsfResizeX . "/" . $this->_vsfResizeY . "/resize" . $productImage;
             }
             $productImage =
-                $this->_baseUrl
+                $this->_imageBaseUrl
                 . Constants::DIR_MEDIA_CATALOG_PRODUCT
                 . $productImage;
         }
