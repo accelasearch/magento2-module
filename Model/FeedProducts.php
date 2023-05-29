@@ -249,7 +249,7 @@ class FeedProducts
             AND cpevisibility.value IN ($this->_visibility)
         ";
 
-        // include or exlude categories
+        // include or exclude categories
         if (0 == (int)$categoriesBehavior && (strlen($categoriesSelected) > 0) && !in_array("0", $categoriesSelectedArray)) {
             $sqlFeedProductsSel .= "AND cpe.entity_id IN (SELECT product_id FROM $tableCatalogCategoryProduct WHERE category_id NOT IN ($categoriesSelected)) ";
         } elseif (1 == (int)$categoriesBehavior) {
