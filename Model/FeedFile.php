@@ -160,170 +160,148 @@ class FeedFile
 
             // PRODUCTS ITERATION
             foreach ($feedProducts as $feedProduct) {
-                $productId = $feedProduct['entity_id'];
-                /* id (required) */
-                $productSku = $feedProduct['sku'];
-                if (!$productId || !$productSku) {
-                    continue;
-                }
-
-                $this->_product = $this->_productRepository->getById($productId, false, $store->getId());
-                $this->_feedFields->setup($this->_product, $productSku, $store->getId());
-
-                // getting required product data
-                /* title (required) */
-                $productName = $this->_feedFields->getName();
-                if (!$productName) {
-                    $this->_logger->warning("product $productSku skipped Name missing " . $productName);
-                    continue;
-                }
-                /* Categories (optional) */
-                $result = $this->_feedFields->_buildCategoriesTree($productId, $store);
-                if (!$result["success"] || $result["categories"] === '') {
-                    $this->_logger->error("No Categories found for product:" . $productSku);
-                    $categories = '';
-                } else {
-                    $categories = strip_tags(strtolower($result["categories"]));
-                    $this->_logger->info("Categories: " . $categories);
-                }
-                /* description (required) */
-                $productDescription = $this->_feedFields->getDescription();
-
-                /* link (required) */
-                $productLink = $this->_feedFields->getLink();
-                if (!$productLink) {
-                    $this->_logger->warning("product $productSku skipped Link missing " . $productLink);
-                    continue;
-                }
-                /* image_link (required) */
-                $productImageLink = $this->_feedFields->getImageLink();
-                if (!$productImageLink) {
-                    $this->_logger->warning("product $productSku skipped Image Link missing " . $productImageLink);
-                    continue;
-                }
-                /* availability (required) */
-                $productAvailability = $this->_feedFields->getAvailability();
-                if (!$productAvailability) {
-                    $this->_logger->warning("product $productSku skipped Availability missing " . $productAvailability);
-                    continue;
-                }
-                /* price (required) */
-                $productPrice = $this->_feedFields->getPrice();
-                if (!$productPrice) {
-                    $this->_logger->warning("product $productSku skipped Price missing " . $productPrice);
-                    continue;
-                }
-
-                $productSpecialPrice = $this->_feedFields->getSpecialPrice();
-                if ($productSpecialPrice <= 0) {
-                    $productSpecialPrice = $productPrice;
-                }
-                $productPrice = number_format($productPrice, 2, '.', '');
-                $productSpecialPrice = number_format($productSpecialPrice, 2, '.', '');
-
-                $scontoPercentuale = '';
-                if ($productSpecialPrice && $productSpecialPrice < $productPrice) {
-                    $scontoPercentuale = round((($productPrice - $productSpecialPrice) * 100) / $productPrice);
-                    $scontoPercentuale = number_format($scontoPercentuale, 0, '.', '') . '%';
-                }
-
-                /* currency (price required) */
-                $productCurrency = $this->_feedFields->getCurrency();
-                if (!$productCurrency) {
-                    $this->_logger->warning("product $productSku skipped Currency missing " . $productCurrency);
-                    continue;
-                }
-
-                fwrite($this->_finalFeedFile, "<item>");
-
-                /* id (required) */
-                fwrite($this->_finalFeedFile,
-                    "<g:id><![CDATA[" . $productSku . "]]></g:id>");
-                /* title (required) */
-                fwrite($this->_finalFeedFile,
-                    "<title><![CDATA[" . $productName . "]]></title>");
-                /* category (optional) */
-                fwrite($this->_finalFeedFile,
-                    "<g:product_type><![CDATA[" . $categories . "]]></g:product_type>");
-                /* description (required) */
-                fwrite($this->_finalFeedFile,
-                    "<g:description><![CDATA[" . $productDescription . "]]></g:description>");
-                /* link (required) */
-                fwrite($this->_finalFeedFile,
-                    "<link><![CDATA[" . $productLink . "]]></link>");
-                /* image_link (required) */
-                fwrite($this->_finalFeedFile,
-                    "<g:image_link><![CDATA[" . $productImageLink . "]]></g:image_link>");
-                /* additional_image_link */
-                fwrite($this->_finalFeedFile,
-                    "<g:additional_image_link><![CDATA[" . "]]></g:additional_image_link>");
-                /* availability (required) */
-                fwrite($this->_finalFeedFile,
-                    "<g:availability><![CDATA[" . $productAvailability . "]]></g:availability>");
-                /* Price (required) with currency */
-                fwrite($this->_finalFeedFile,
-                    "<g:price><![CDATA[" . $productPrice . " " . $productCurrency . "]]></g:price>");
-                /* Special (required) with currency */
-                fwrite($this->_finalFeedFile,
-                    "<g:sale_price><![CDATA[" . $productSpecialPrice . " " . $productCurrency . "]]></g:sale_price>");
-                /* Brand */
-                fwrite($this->_finalFeedFile,
-                    "<g:brand><![CDATA[" . $this->_feedFields->getBrand() . "]]></g:brand>");
-                /* GTIN */
-                fwrite($this->_finalFeedFile,
-                    "<g:gtin><![CDATA[" . $this->_feedFields->getGtin() . "]]></g:gtin>");
-                /* MPN */
-                fwrite($this->_finalFeedFile,
-                    "<g:mpn><![CDATA[" . $this->_feedFields->getMpn() . "]]></g:mpn>");
-                /* Condition */
-                fwrite($this->_finalFeedFile,
-                    "<g:condition><![CDATA[new]]></g:condition>");
-                /* Shipping OPEN */
-                fwrite($this->_finalFeedFile,
-                    "<g:shipping>");
-                /* Shipping Country */
-                fwrite($this->_finalFeedFile,
-                    "<g:country><![CDATA[" . $this->_feedFields->getShippingCountry($store) . "]]></g:country>");
-                /* Shipping Region */
-                fwrite($this->_finalFeedFile,
-                    "<g:region><![CDATA[]]></g:region>");
-                /* Shipping Service */
-                fwrite($this->_finalFeedFile,
-                    "<g:service><![CDATA[]]></g:service>");
-                /* Shipping Price */
-                fwrite($this->_finalFeedFile,
-                    "<g:price><![CDATA[" . $this->_feedFields->getShippingCost()
-                    . " " . $productCurrency . "]]></g:price>");
-                /* Shipping CLOSE */
-                fwrite($this->_finalFeedFile,
-                    "</g:shipping>");
-
-                $customMultipleFields = $this->dataHelper->getCustomMultipleFields();
-                foreach ($customMultipleFields as $customField) {
-                    if (!empty($customField["node_name"]) && !empty($customField["attribute_code"])) {
-                        $attributeValues = $this->_feedFields->getCustomAttribute($customField["attribute_code"]);
-                        if ($attributeValues && is_array($attributeValues)) {
-                            foreach ($attributeValues as $value) {
-                                fwrite($this->_finalFeedFile,
-                                    "<" . $customField["node_name"] . "><![CDATA[" . $value . "]]></" . $customField["node_name"] . ">");
+                try {
+                    $productId = $feedProduct['entity_id'];
+                    /* id (required) */
+                    $productSku = $feedProduct['sku'];
+                    if (!$productId || !$productSku) {
+                        continue;
+                    }
+                    $this->_product = $this->_productRepository->getById($productId, false, $store->getId());
+                    $this->_feedFields->setup($this->_product, $productSku, $store->getId());
+                    // getting required product data
+                    /* title (required) */
+                    $productName = $this->_feedFields->getName();
+                    if (!$productName) {
+                        $this->_logger->warning("product $productSku skipped Name missing " . $productName);
+                        continue;
+                    }
+                    /* Categories (optional) */
+                    $result = $this->_feedFields->_buildCategoriesTree($productId, $store);
+                    if (!$result["success"] || $result["categories"] === '') {
+                        $this->_logger->error("No Categories found for product:" . $productSku);
+                        $categories = '';
+                    } else {
+                        $categories = strip_tags(strtolower($result["categories"]));
+                        $this->_logger->info("Categories: " . $categories);
+                    }
+                    /* description (required) */
+                    $productDescription = $this->_feedFields->getDescription();
+                    /* link (required) */
+                    $productLink = $this->_feedFields->getLink();
+                    if (!$productLink) {
+                        $this->_logger->warning("product $productSku skipped Link missing " . $productLink);
+                        continue;
+                    }
+                    /* image_link (required) */
+                    $productImageLink = $this->_feedFields->getImageLink();
+                    if (!$productImageLink) {
+                        $this->_logger->warning("product $productSku skipped Image Link missing " . $productImageLink);
+                        continue;
+                    }
+                    /* availability (required) */
+                    $productAvailability = $this->_feedFields->getAvailability();
+                    if (!$productAvailability) {
+                        $this->_logger->warning("product $productSku skipped Availability missing " . $productAvailability);
+                        continue;
+                    }
+                    /* price (required) */
+                    $productPrice = $this->_feedFields->getPrice();
+                    if (!$productPrice) {
+                        $this->_logger->warning("product $productSku skipped Price missing " . $productPrice);
+                        continue;
+                    }
+                    $productSpecialPrice = $this->_feedFields->getSpecialPrice();
+                    if ($productSpecialPrice <= 0) {
+                        $productSpecialPrice = $productPrice;
+                    }
+                    $productPrice = number_format($productPrice, 2, '.', '');
+                    $productSpecialPrice = number_format($productSpecialPrice, 2, '.', '');
+                    $scontoPercentuale = '';
+                    if ($productSpecialPrice && $productSpecialPrice < $productPrice) {
+                        $scontoPercentuale = round((($productPrice - $productSpecialPrice) * 100) / $productPrice);
+                        $scontoPercentuale = number_format($scontoPercentuale, 0, '.', '') . '%';
+                    }
+                    /* currency (price required) */
+                    $productCurrency = $this->_feedFields->getCurrency();
+                    if (!$productCurrency) {
+                        $this->_logger->warning("product $productSku skipped Currency missing " . $productCurrency);
+                        continue;
+                    }
+                    fwrite($this->_finalFeedFile, "<item>");
+                    /* id (required) */
+                    fwrite($this->_finalFeedFile, "<g:id><![CDATA[" . $productSku . "]]></g:id>");
+                    /* title (required) */
+                    fwrite($this->_finalFeedFile, "<title><![CDATA[" . $productName . "]]></title>");
+                    /* category (optional) */
+                    fwrite($this->_finalFeedFile, "<g:product_type><![CDATA[" . $categories . "]]></g:product_type>");
+                    /* description (required) */
+                    fwrite($this->_finalFeedFile,
+                        "<g:description><![CDATA[" . $productDescription . "]]></g:description>");
+                    /* link (required) */
+                    fwrite($this->_finalFeedFile, "<link><![CDATA[" . $productLink . "]]></link>");
+                    /* image_link (required) */
+                    fwrite($this->_finalFeedFile, "<g:image_link><![CDATA[" . $productImageLink . "]]></g:image_link>");
+                    /* additional_image_link */
+                    fwrite($this->_finalFeedFile,
+                        "<g:additional_image_link><![CDATA[" . "]]></g:additional_image_link>");
+                    /* availability (required) */
+                    fwrite($this->_finalFeedFile,
+                        "<g:availability><![CDATA[" . $productAvailability . "]]></g:availability>");
+                    /* Price (required) with currency */
+                    fwrite($this->_finalFeedFile,
+                        "<g:price><![CDATA[" . $productPrice . " " . $productCurrency . "]]></g:price>");
+                    /* Special (required) with currency */
+                    fwrite($this->_finalFeedFile,
+                        "<g:sale_price><![CDATA[" . $productSpecialPrice . " " . $productCurrency . "]]></g:sale_price>");
+                    /* Brand */
+                    fwrite($this->_finalFeedFile,
+                        "<g:brand><![CDATA[" . $this->_feedFields->getBrand() . "]]></g:brand>");
+                    /* GTIN */
+                    fwrite($this->_finalFeedFile, "<g:gtin><![CDATA[" . $this->_feedFields->getGtin() . "]]></g:gtin>");
+                    /* MPN */
+                    fwrite($this->_finalFeedFile, "<g:mpn><![CDATA[" . $this->_feedFields->getMpn() . "]]></g:mpn>");
+                    /* Condition */
+                    fwrite($this->_finalFeedFile, "<g:condition><![CDATA[new]]></g:condition>");
+                    /* Shipping OPEN */
+                    fwrite($this->_finalFeedFile, "<g:shipping>");
+                    /* Shipping Country */
+                    fwrite($this->_finalFeedFile,
+                        "<g:country><![CDATA[" . $this->_feedFields->getShippingCountry($store) . "]]></g:country>");
+                    /* Shipping Region */
+                    fwrite($this->_finalFeedFile, "<g:region><![CDATA[]]></g:region>");
+                    /* Shipping Service */
+                    fwrite($this->_finalFeedFile, "<g:service><![CDATA[]]></g:service>");
+                    /* Shipping Price */
+                    fwrite($this->_finalFeedFile,
+                        "<g:price><![CDATA[" . $this->_feedFields->getShippingCost() . " " . $productCurrency . "]]></g:price>");
+                    /* Shipping CLOSE */
+                    fwrite($this->_finalFeedFile, "</g:shipping>");
+                    $customMultipleFields = $this->dataHelper->getCustomMultipleFields();
+                    foreach ($customMultipleFields as $customField) {
+                        if (!empty($customField["node_name"]) && !empty($customField["attribute_code"])) {
+                            $attributeValues = $this->_feedFields->getCustomAttribute($customField["attribute_code"]);
+                            if ($attributeValues && is_array($attributeValues)) {
+                                foreach ($attributeValues as $value) {
+                                    fwrite($this->_finalFeedFile,
+                                        "<" . $customField["node_name"] . "><![CDATA[" . $value . "]]></" . $customField["node_name"] . ">");
+                                }
                             }
                         }
                     }
-                }
-                /* AS */
-                $customFields = $this->dataHelper->getCustomFields();
-
-                foreach ($customFields as $customField) {
-                    if (!empty($customField["node_name"]) && !empty($customField["attribute_code"])) {
-                        fwrite($this->_finalFeedFile,
-                            "<" . $customField["node_name"] . "><![CDATA[" . $this->_feedFields->getCustomAttribute($customField["attribute_code"]) . "]]></" . $customField["node_name"] . ">");
+                    /* AS */
+                    $customFields = $this->dataHelper->getCustomFields();
+                    foreach ($customFields as $customField) {
+                        if (!empty($customField["node_name"]) && !empty($customField["attribute_code"])) {
+                            fwrite($this->_finalFeedFile,
+                                "<" . $customField["node_name"] . "><![CDATA[" . $this->_feedFields->getCustomAttribute($customField["attribute_code"] , true) . "]]></" . $customField["node_name"] . ">");
+                        }
                     }
+                    fwrite($this->_finalFeedFile, "<sconto><![CDATA[" . $scontoPercentuale . "]]></sconto>");
+                    fwrite($this->_finalFeedFile, "</item>\n");
+                } catch (Exception $exception){
+                    $this->_logger->warning("product $productSku skipped, error: " . $exception->getMessage());
                 }
-
-                fwrite($this->_finalFeedFile,
-                    "<sconto><![CDATA[" . $scontoPercentuale . "]]></sconto>");
-
-                fwrite($this->_finalFeedFile, "</item>\n");
             }
 
             fwrite($this->_finalFeedFile, "</channel>\n"); //Tag fine file
