@@ -1,4 +1,5 @@
 <?php
+
 namespace AccelaSearch\Search\Model;
 
 use AccelaSearch\Search\Constants;
@@ -32,7 +33,6 @@ class FeedFields
     // product
     protected $_productSku;
     protected $_baseUrl;
-    protected $_imageBaseUrl;
     protected $_vsfResizeX;
     protected $_vsfResizeY;
     //category
@@ -110,7 +110,8 @@ class FeedFields
         Grouped                             $catalogProductTypeGrouped,
         CategoryRepository                  $categoryRepository,
         ProductAttributeRepositoryInterface $attributeRepository
-    ) {
+    )
+    {
         $this->_stockRegistry = $stockRegistry;
         $this->_shippingCost = $shippingCost;
         $this->_helper = $helper;
@@ -137,7 +138,6 @@ class FeedFields
         $this->_storeId = $storeId;
         // Secure Base Url
         $this->_baseUrl = $this->_getSecureBaseUrl($storeId);
-        $this->_imageBaseUrl = $this->_getSecureBaseUrl();
 
         $customBaseUrl = $this->_helper->getConfig(
             Constants::PATH_FEED_CUSTOM_BASE_URL,
@@ -507,12 +507,14 @@ class FeedFields
         }
 
         if ($productImage) {
-
+            if (strpos($productImage, "/") !== 0) {
+                $productImage = "/" . $productImage;
+            }
             if ($this->_vsfResizeX && $this->_vsfResizeY) {
-                return $this->_imageBaseUrl . "img/" . $this->_vsfResizeX . "/" . $this->_vsfResizeY . "/resize" . $productImage;
+                return $this->_baseUrl . "img/" . $this->_vsfResizeX . "/" . $this->_vsfResizeY . "/resize" . $productImage;
             }
             $productImage =
-                $this->_imageBaseUrl
+                $this->_baseUrl
                 . Constants::DIR_MEDIA_CATALOG_PRODUCT
                 . $productImage;
         }
@@ -584,7 +586,7 @@ class FeedFields
      * @return null
      * @throws NoSuchEntityException
      */
-    public function getCustomAttribute($attributeCode)
+    public function getCustomAttribute($attributeCode , $singleValue = false)
     {
         if (!$this->_product) {
             $this->_verboseLogger->error("No product found!");
@@ -605,7 +607,7 @@ class FeedFields
                         ->getValue($this->_product);
 
                     $isMultiple = false;
-                    if (strpos($result, ',') !== false) {
+                    if (strpos($result, ',') !== false && !$singleValue) {
                         $isMultiple = true;
                         $result = explode(',', $result);
                     }
@@ -716,14 +718,13 @@ class FeedFields
                 $this->_verboseLogger->warn("No Manufacturer or Brand found for product:" . $this->_productSku);
             }
         } // if free text
-        else if(Constants::BRAND_ATTRIBUTE_BRAND === $productBrandAttribute){
+        else if (Constants::BRAND_ATTRIBUTE_BRAND === $productBrandAttribute) {
             if ($this->_product->getAttributeText('brand')) {
                 $productBrand = $this->_product->getAttributeText('brand');
             } else {
                 $this->_verboseLogger->warn("No Manufacturer or Brand found for product:" . $this->_productSku);
             }
-        }
-        else {
+        } else {
             $productBrand = $this->_helper->getConfig(
                 Constants::PATH_BRAND_NAME,
                 ScopeInterface::SCOPE_STORE,
