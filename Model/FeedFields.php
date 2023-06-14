@@ -364,7 +364,7 @@ class FeedFields
 
         $productDescription = substr(
             html_entity_decode(
-                $this->_product->getData($productDescriptionAttribute),
+                (string)$this->_product->getData($productDescriptionAttribute),
                 ENT_QUOTES
             ),
             0,
