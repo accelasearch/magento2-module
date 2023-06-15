@@ -715,14 +715,14 @@ class FeedFields
             if ($this->_product->getAttributeText('manufacturer')) {
                 $productBrand = $this->_product->getAttributeText('manufacturer');
             } else {
-                $this->_verboseLogger->warn("No Manufacturer or Brand found for product:" . $this->_productSku);
+                $this->_verboseLogger->warning("No Manufacturer or Brand found for product:" . $this->_productSku);
             }
         } // if free text
         else if (Constants::BRAND_ATTRIBUTE_BRAND === $productBrandAttribute) {
             if ($this->_product->getAttributeText('brand')) {
                 $productBrand = $this->_product->getAttributeText('brand');
             } else {
-                $this->_verboseLogger->warn("No Manufacturer or Brand found for product:" . $this->_productSku);
+                $this->_verboseLogger->warning("No Manufacturer or Brand found for product:" . $this->_productSku);
             }
         } else {
             $productBrand = $this->_helper->getConfig(
@@ -805,7 +805,7 @@ class FeedFields
         if ($this->_product->getData($productMpnAttribute) && !is_array($this->_product->getData($productMpnAttribute))) {
             $productMpn = $this->_product->getData($productMpnAttribute);
         } else {
-            $this->_verboseLogger->warn("No MPN found for product:" . $this->_productSku);
+            $this->_verboseLogger->warning("No MPN found for product:" . $this->_productSku);
         }
 
         return $productMpn;
