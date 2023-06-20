@@ -242,7 +242,6 @@ class FeedFields
             $storeView->getId()
         );
         $categoriesArray = explode(",", $categories);
-        $exlude = '';
 
         $tableCatalogCategoryProduct = $this->_helper->getMagentoTableWithPrefix(Constants::TABLE_MAGENTO_CATALOG_CATEGORY_PRODUCT);
         $tableCatalogCategoryEntity = $this->_helper->getMagentoTableWithPrefix(Constants::TABLE_MAGENTO_CATALOG_CATEGORY_ENTITY);

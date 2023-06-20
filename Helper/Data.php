@@ -152,7 +152,7 @@ class Data extends AbstractHelper
         $config_code = null
     )
     {
-        return $this->scopeConfig->getValue($config_path, $config_scope, $config_code);
+        return (string)$this->scopeConfig->getValue($config_path, $config_scope, $config_code);
     }
 
     /**
