@@ -281,11 +281,14 @@ class FeedFile
                     foreach ($customMultipleFields as $customField) {
                         if (!empty($customField["node_name"]) && !empty($customField["attribute_code"])) {
                             $attributeValues = $this->_feedFields->getCustomAttribute($customField["attribute_code"]);
-                            if ($attributeValues && is_array($attributeValues)) {
+                            if (is_array($attributeValues)) {
                                 foreach ($attributeValues as $value) {
                                     fwrite($this->_finalFeedFile,
                                         "<" . $customField["node_name"] . "><![CDATA[" . $value . "]]></" . $customField["node_name"] . ">");
                                 }
+                            } elseif (!empty($attributeValues)) {
+                                fwrite($this->_finalFeedFile,
+                                    "<" . $customField["node_name"] . "><![CDATA[" . $attributeValues . "]]></" . $customField["node_name"] . ">");
                             }
                         }
                     }
