@@ -10,6 +10,8 @@ use Magento\Framework\Filesystem\Io\File;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Exception\FileSystemException;
 use AccelaSearch\Search\Logger\Logger;
+use Magento\Store\Model\ScopeInterface;
+use AccelaSearch\Search\Model\Config\Source\ConfigurableProducts as ProductTypeToExport;
 
 /**
  * Class FeedFile
@@ -161,6 +163,10 @@ class FeedFile
             // PRODUCTS ITERATION
             foreach ($feedProducts as $feedProduct) {
                 try {
+                    if(!$this->parentEnable($store, $feedProducts, $feedProduct)) {
+                        continue;
+                    }
+
                     $productId = $feedProduct['entity_id'];
                     /* id (required) */
                     $productSku = $feedProduct['sku'];
@@ -169,6 +175,41 @@ class FeedFile
                     }
                     $this->_product = $this->_productRepository->getById($productId, false, $store->getId());
                     $this->_feedFields->setup($this->_product, $productSku, $store->getId());
+
+                    $superAttributeList = [];
+                    if ($feedProduct['type_id'] == 'configurable') {
+                        $typeInstance = $this->_product->getTypeInstance()->setStoreFilter($store->getId(), $this->_product);
+
+                        $children = $typeInstance->getUsedProducts($this->_product);
+
+                        $attributes = $typeInstance->getConfigurableAttributes($this->_product);
+                        foreach ($attributes as $attribute) {
+                            $attributeCode = $attribute->getProductAttribute()->getAttributeCode();;
+                            $superAttributeList[$attribute->getAttributeId()] = $attributeCode;
+                        }
+                    }
+
+                    if ($feedProduct['type_id'] == 'bundle' || $feedProduct['type_id'] == 'grouped') {
+                        $children = $this->_product->getTypeInstance()->getAssociatedProducts($this->_product);
+                    }
+
+                    $childrenSkus = [];
+                    $configurableOptions = [];
+                    $minPrice = 0;
+                    $minSpecial = 0;
+
+                    if (isset($children)) {
+                        foreach ($children as $child) {
+                            $minPrice = $minPrice == 0 || $child->getPrice() < $minPrice ? $child->getPrice() : $minPrice;
+                            $minSpecial = $minSpecial == 0 || $child->getPrice() < $minSpecial ? $child->getPrice() : $minSpecial;
+                            $childrenSkus[] = $child->getSku();
+
+                            foreach ($superAttributeList as $attributeCode) {
+                                $configurableOptions[$child->getSku()][$attributeCode] = $child->getData($attributeCode);
+                            }
+                        }
+                    }
+
                     // getting required product data
                     /* title (required) */
                     $productName = $this->_feedFields->getName();
@@ -206,15 +247,17 @@ class FeedFile
                         continue;
                     }
                     /* price (required) */
-                    $productPrice = $this->_feedFields->getPrice();
+                    $productPrice = ($minPrice > 0) ? $minPrice : $this->_feedFields->getPrice();
                     if (!$productPrice) {
                         $this->_logger->warning("product $productSku skipped Price missing " . $productPrice);
                         continue;
                     }
-                    $productSpecialPrice = $this->_feedFields->getSpecialPrice();
+                    $priceLabel = ($minPrice > 0) ? 'A partire da ' : '';
+                    $productSpecialPrice = ($minSpecial > 0) ? $minSpecial : $this->_feedFields->getSpecialPrice();
                     if ($productSpecialPrice <= 0) {
                         $productSpecialPrice = $productPrice;
                     }
+                    $specialLabel = ($minSpecial > 0) ? 'A partire da ' : '';
                     $productPrice = number_format($productPrice, 2, '.', '');
                     $productSpecialPrice = number_format($productSpecialPrice, 2, '.', '');
                     $scontoPercentuale = '';
@@ -250,10 +293,10 @@ class FeedFile
                         "<g:availability><![CDATA[" . $productAvailability . "]]></g:availability>");
                     /* Price (required) with currency */
                     fwrite($this->_finalFeedFile,
-                        "<g:price><![CDATA[" . $productPrice . " " . $productCurrency . "]]></g:price>");
+                        "<g:price><![CDATA[" . $priceLabel . $productPrice . " " . $productCurrency . "]]></g:price>");
                     /* Special (required) with currency */
                     fwrite($this->_finalFeedFile,
-                        "<g:sale_price><![CDATA[" . $productSpecialPrice . " " . $productCurrency . "]]></g:sale_price>");
+                        "<g:sale_price><![CDATA[" . $specialLabel . $productSpecialPrice . " " . $productCurrency . "]]></g:sale_price>");
                     /* Brand */
                     fwrite($this->_finalFeedFile,
                         "<g:brand><![CDATA[" . $this->_feedFields->getBrand() . "]]></g:brand>");
@@ -275,6 +318,44 @@ class FeedFile
                     /* Shipping Price */
                     fwrite($this->_finalFeedFile,
                         "<g:price><![CDATA[" . $this->_feedFields->getShippingCost() . " " . $productCurrency . "]]></g:price>");
+
+                    // if product is simple with parent, get parent sku
+                    if(!empty($feedProduct['parent_id']) && ($feedProduct['type_id'] == 'simple' || $feedProduct['type_id'] == 'virtual' || $feedProduct['type_id'] == 'downloadable')) {
+                        foreach ($feedProducts as $checkSkuParent) {
+                            if($checkSkuParent['entity_id'] == $feedProduct['parent_id']) {
+                                fwrite($this->_finalFeedFile,
+                                    "<g:item_group_id><![CDATA[" . $checkSkuParent['sku'] . "]]></g:item_group_id>");
+                            }
+                        }
+                    }
+
+                    if(!empty($childrenSkus)) {
+                        fwrite($this->_finalFeedFile,
+                            "<g:children><![CDATA[" . implode(',', $childrenSkus) . "]]></g:children>");
+                    }
+
+                    if(!empty($configurableOptions)) {
+                        fwrite($this->_finalFeedFile,
+                            "<g:configurable_option>");
+
+                        foreach ($configurableOptions as $childSku => $options) {
+                            fwrite($this->_finalFeedFile,
+                                "<item>");
+                            fwrite($this->_finalFeedFile,
+                                "<child_sku><![CDATA[" . $childSku . "]]></child_sku>");
+
+                            foreach ($options as $attributeCode => $value) {
+                                fwrite($this->_finalFeedFile,
+                                    "<" . $attributeCode . "><![CDATA[" . $value . "]]></>");
+                            }
+                            fwrite($this->_finalFeedFile,
+                                "</item>");
+                        }
+
+                        fwrite($this->_finalFeedFile,
+                            "</g:configurable_option>");
+                    }
+
                     /* Shipping CLOSE */
                     fwrite($this->_finalFeedFile, "</g:shipping>");
                     $customMultipleFields = $this->dataHelper->getCustomMultipleFields();
@@ -315,5 +396,32 @@ class FeedFile
         }
 
         return array("success" => true);
+    }
+
+    protected function parentEnable($store, $feedProducts, $feedProduct) {
+        // if parent id is empty, the product is a configurable or a simple directly saleable
+        if(empty($feedProduct['parent_id'])) {
+            return true;
+        }
+
+        $productsBehavior = $this->dataHelper->getConfig(
+            'accelasearch_search/feed/products_behavior',
+            ScopeInterface::SCOPE_STORE,
+            $store->getCode()
+        );
+
+        // if only children or only configurable, the status is already checked by query
+        // if children + configurable, enabled child can be exported by query if its parent is disable
+        if ($productsBehavior == ProductTypeToExport::CONFIGURABLES_AND_CHILDREN) {
+            foreach ($feedProducts as $checkStatusParent) {
+                if($checkStatusParent['entity_id'] == $feedProduct['parent_id']) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        return true;
     }
 }

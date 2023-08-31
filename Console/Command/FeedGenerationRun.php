@@ -31,21 +31,17 @@ class FeedGenerationRun extends Command
     }
 
     /**
-     * CLI command description
-     *
      * @param InputInterface $input
      * @param OutputInterface $output
-     *
-     * @return void
+     * @return int
      */
-    protected
-    function execute(
-        InputInterface $input,
-        OutputInterface $output
-    ): void {
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
         $output->writeln("AccelaSearch generate feed start");
         $this->feedGeneration->generateFeed();
         $output->writeln("AccelaSearch generate feed end");
+
+        return 0;
     }
 
 }
