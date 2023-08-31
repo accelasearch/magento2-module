@@ -5,6 +5,7 @@
             <feed>
                 <status>0</status>
                 <feed_directory>/feed</feed_directory>
+                <products_behavior>3</products_behavior>
             </feed>
             <fields>
                 <shipping_by_price_first_price>0</shipping_by_price_first_price>

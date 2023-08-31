@@ -60,6 +60,7 @@ class Constants
     const TABLE_MAGENTO_CATALOG_CATEGORY_PRODUCT = 'catalog_category_product';
     const TABLE_MAGENTO_CATALOG_CATEGORY_ENTITY = 'catalog_category_entity';
     const TABLE_MAGENTO_CATALOG_CATEGORY_ENTITY_VARCHAR = 'catalog_category_entity_varchar';
+    const TABLE_MAGENTO_CATALOG_PRODUCT_RELATION = 'catalog_product_relation';
     /* Extension Configuration Values */
     // Brand attribute values
     const BRAND_ATTRIBUTE_DEFAULT = 'default';

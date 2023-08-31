@@ -1,4 +1,5 @@
 <?php
+
 namespace AccelaSearch\Search\Model;
 
 use AccelaSearch\Search\Constants;
@@ -8,6 +9,7 @@ use AccelaSearch\Search\Logger\Logger;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Store\Model\ScopeInterface;
+use AccelaSearch\Search\Model\Config\Source\ConfigurableProducts as ProductTypeToExport;
 
 /**
  * Class FeedProducts
@@ -17,6 +19,8 @@ class FeedProducts
 {
     private $_status;
     private $_visibility;
+    private $childrenType;
+    private $fatherType;
 
     protected $_product_entity_type;
     protected $_category_entity_type;
@@ -49,8 +53,7 @@ class FeedProducts
         ScopeConfigInterface $scopeConfig,
         Data $helper,
         Logger $logger
-    )
-    {
+    ) {
         $this->_scopeConfig = $scopeConfig;
         $this->_helper = $helper;
         $this->_logger = $logger;
@@ -98,34 +101,34 @@ class FeedProducts
                 if ($stmCategoryEntityTypeIdSel) {
                     $this->_category_entity_type = $stmCategoryEntityTypeIdSel[0]['entity_type_id'];
                 }
-            } catch(\Exception $exception) {
+            } catch (\Exception $exception) {
                 return array("success" => false, "message" => "Category entity type error: " . $exception->getMessage());
             }
         }
 
         // product 'status' attribute
         $tableName = $this->_helper->getMagentoTableWithPrefix(Constants::TABLE_MAGENTO_EAV_ATTRIBUTE);
-        $sqlProductStatusSel = "SELECT attribute_id, backend_type FROM $tableName WHERE attribute_code = 'status' AND entity_type_id = " . $this->_product_entity_type. " LIMIT 0, 1";
+        $sqlProductStatusSel = "SELECT attribute_id, backend_type FROM $tableName WHERE attribute_code = 'status' AND entity_type_id = " . $this->_product_entity_type . " LIMIT 0, 1";
         try {
             $stmProductStatusSel = $this->_helper->dbmage_read->fetchAll($sqlProductStatusSel);
             if ($stmProductStatusSel) {
                 $this->_status_attribute = $stmProductStatusSel[0]["attribute_id"];
                 $this->_status_backend_type = $stmProductStatusSel[0]["backend_type"];
             }
-        } catch(\Exception $exception) {
+        } catch (\Exception $exception) {
             return array("success" => false, "message" => "Product status attribute error: " . $exception->getMessage());
         }
 
         // product 'visibility' attribute
         $tableName = $this->_helper->getMagentoTableWithPrefix(Constants::TABLE_MAGENTO_EAV_ATTRIBUTE);
-        $sqlProductVisibilitySel = "SELECT attribute_id, backend_type FROM $tableName WHERE attribute_code = 'visibility' AND entity_type_id = " . $this->_product_entity_type. " LIMIT 0, 1";
+        $sqlProductVisibilitySel = "SELECT attribute_id, backend_type FROM $tableName WHERE attribute_code = 'visibility' AND entity_type_id = " . $this->_product_entity_type . " LIMIT 0, 1";
         try {
             $stmProductVisibilitySel = $this->_helper->dbmage_read->fetchAll($sqlProductVisibilitySel);
             if ($stmProductVisibilitySel) {
                 $this->_visibility_attribute = $stmProductVisibilitySel[0]["attribute_id"];
                 $this->_visibility_backend_type = $stmProductVisibilitySel[0]["backend_type"];
             }
-        } catch(\Exception $exception) {
+        } catch (\Exception $exception) {
             return array("success" => false, "message" => "Product visibility attribute error: " . $exception->getMessage());
         }
 
@@ -138,6 +141,9 @@ class FeedProducts
             Visibility::VISIBILITY_IN_CATALOG,
             Visibility::VISIBILITY_NOT_VISIBLE
         ));
+
+        $this->childrenType = 'simple,virtual,downloadable';
+        $this->fatherType = 'bundle,grouped,configurable';
 
         return array("success" => true);
     }
@@ -155,6 +161,12 @@ class FeedProducts
         if (!$result["success"]) {
             return $result;
         }
+
+        $productsBehavior = $this->_helper->getConfig(
+            'accelasearch_search/feed/products_behavior',
+            ScopeInterface::SCOPE_STORE,
+            $store->getCode()
+        );
 
         // the categories to exclude
         $categoriesBehavior =
@@ -205,8 +217,10 @@ class FeedProducts
         $tableCatalogCategoryProduct =
             $this->_helper->getMagentoTableWithPrefix(
                 Constants::TABLE_MAGENTO_CATALOG_CATEGORY_PRODUCT);
+        $tableCatalogProductRelation = $this->_helper->getMagentoTableWithPrefix(
+            Constants::TABLE_MAGENTO_CATALOG_PRODUCT_RELATION);
 
-        $sqlFeedProductsSel = "SELECT DISTINCT cpe.entity_id, cpe.type_id, cpe.sku, csi.qty, csi.is_in_stock
+        $sqlFeedProductsSel = "SELECT DISTINCT cpe.entity_id, cpe.type_id, cpe.sku, csi.qty, csi.is_in_stock, cpr.parent_id
             FROM $tableCatalogProductEntity cpe "
             . // to get 'website_id'
             "JOIN $tableCatalogProductWebsite cpw
@@ -235,7 +249,12 @@ class FeedProducts
 
             . // checking the product stock on 'cataloginventory_stock_item' table
             "LEFT JOIN $tableCataloginventoryStockItem csi
-            ON csi.product_id = cpe.entity_id ";
+            ON csi.product_id = cpe.entity_id "
+
+            .
+            "LEFT JOIN $tableCatalogProductRelation cpr
+            ON cpe.entity_id = cpr.child_id"
+        ;
 
         /*
         . // checking the categories product on 'catalog_category_product' table
@@ -248,6 +267,19 @@ class FeedProducts
             WHERE cpestatus.value = $this->_status
             AND cpevisibility.value IN ($this->_visibility)
         ";
+
+        switch ($productsBehavior) {
+            case ProductTypeToExport::CHILDREN_ONLY:
+                $sqlFeedProductsSel .= 'AND cpe.type_id IN ' . $this->childrenType . ' ';
+                break;
+            case ProductTypeToExport::CONFIGURABLES_ONLY:
+                $sqlFeedProductsSel .= 'AND cpe.type_id IN ' . $this->fatherType . ' ';
+                break;
+            case ProductTypeToExport::CONFIGURABLES_AND_CHILDREN:
+            default:
+                $sqlFeedProductsSel .= '';
+                break;
+        }
 
         // include or exclude categories
         if (0 == (int)$categoriesBehavior && (strlen($categoriesSelected) > 0) && !in_array("0", $categoriesSelectedArray)) {
@@ -262,8 +294,6 @@ class FeedProducts
 
         if (!empty($stockBehavior)) $sqlFeedProductsSel .= "AND csi.is_in_stock IN ($stockBehavior) ";
 
-        // not 'configurable products
-        $sqlFeedProductsSel .= "AND cpe.type_id NOT IN ('configurable','grouped') ";
         // only products with price >= 0.01
         $sqlFeedProductsSel .= "AND cped.value >= 0.01 ";
         // Order by
@@ -273,7 +303,7 @@ class FeedProducts
 
         try {
             $collection = $this->_helper->dbmage_read->fetchAll($sqlFeedProductsSel);
-        } catch(\Exception $exception) {
+        } catch (\Exception $exception) {
             return array(
                 "success" => false,
                 "message" => "Feed products collection error: " . $exception->getMessage()

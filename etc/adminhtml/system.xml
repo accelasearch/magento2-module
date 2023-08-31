@@ -95,6 +95,14 @@
                         <![CDATA[It will used in image url generation /img/{x}/{y}/resize/{url mage}]]>
                     </comment>
                 </field>
+                <field id="products_behavior" translate="label" type="select" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Configurable products export</label>
+                    <source_model>AccelaSearch\Search\Model\Config\Source\ConfigurableProducts</source_model>
+                    <validate>required-entry</validate>
+                    <depends>
+                        <field id="accelasearch_search/general/status">1</field>
+                    </depends>
+                </field>
                 <field id="categories_behavior" translate="label" type="select" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Set behavior of category</label>
                     <source_model>AccelaSearch\Search\Model\Config\Source\ExcludedIncluded</source_model>
