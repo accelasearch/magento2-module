@@ -252,12 +252,12 @@ class FeedFile
                         $this->_logger->warning("product $productSku skipped Price missing " . $productPrice);
                         continue;
                     }
-                    $priceLabel = ($minPrice > 0) ? 'A partire da ' : '';
+
                     $productSpecialPrice = ($minSpecial > 0) ? $minSpecial : $this->_feedFields->getSpecialPrice();
                     if ($productSpecialPrice <= 0) {
                         $productSpecialPrice = $productPrice;
                     }
-                    $specialLabel = ($minSpecial > 0) ? 'A partire da ' : '';
+
                     $productPrice = number_format($productPrice, 2, '.', '');
                     $productSpecialPrice = number_format($productSpecialPrice, 2, '.', '');
                     $scontoPercentuale = '';
@@ -293,10 +293,10 @@ class FeedFile
                         "<g:availability><![CDATA[" . $productAvailability . "]]></g:availability>");
                     /* Price (required) with currency */
                     fwrite($this->_finalFeedFile,
-                        "<g:price><![CDATA[" . $priceLabel . $productPrice . " " . $productCurrency . "]]></g:price>");
+                        "<g:price><![CDATA[" . $productPrice . " " . $productCurrency . "]]></g:price>");
                     /* Special (required) with currency */
                     fwrite($this->_finalFeedFile,
-                        "<g:sale_price><![CDATA[" . $specialLabel . $productSpecialPrice . " " . $productCurrency . "]]></g:sale_price>");
+                        "<g:sale_price><![CDATA[" . $productSpecialPrice . " " . $productCurrency . "]]></g:sale_price>");
                     /* Brand */
                     fwrite($this->_finalFeedFile,
                         "<g:brand><![CDATA[" . $this->_feedFields->getBrand() . "]]></g:brand>");
