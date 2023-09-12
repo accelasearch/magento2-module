@@ -160,6 +160,12 @@ class FeedFile
             fwrite($this->_finalFeedFile, "<link><![CDATA[]]></link>\n");
             fwrite($this->_finalFeedFile, "<description><![CDATA[Data feed description.]]></description>\n");
 
+            $productsBehavior = $this->dataHelper->getConfig(
+                'accelasearch_search/feed/products_behavior',
+                ScopeInterface::SCOPE_STORE,
+                $store->getCode()
+            );
+
             // PRODUCTS ITERATION
             foreach ($feedProducts as $feedProduct) {
                 try {
@@ -193,7 +199,6 @@ class FeedFile
                         $children = $this->_product->getTypeInstance()->getAssociatedProducts($this->_product);
                     }
 
-                    $childrenSkus = [];
                     $configurableOptions = [];
                     $minPrice = 0;
                     $minSpecial = 0;
@@ -202,10 +207,13 @@ class FeedFile
                         foreach ($children as $child) {
                             $minPrice = $minPrice == 0 || $child->getPrice() < $minPrice ? $child->getPrice() : $minPrice;
                             $minSpecial = $minSpecial == 0 || $child->getPrice() < $minSpecial ? $child->getPrice() : $minSpecial;
-                            $childrenSkus[] = $child->getSku();
+
+                            if($productsBehavior != ProductTypeToExport::CONFIGURABLES_ONLY) {
+                                continue;
+                            }
 
                             foreach ($superAttributeList as $attributeCode) {
-                                $configurableOptions[$child->getSku()][$attributeCode] = $child->getData($attributeCode);
+                                $configurableOptions[$child->getSku()][$attributeCode] = $child->getAttributeText($attributeCode);
                             }
                         }
                     }
@@ -306,6 +314,29 @@ class FeedFile
                     fwrite($this->_finalFeedFile, "<g:mpn><![CDATA[" . $this->_feedFields->getMpn() . "]]></g:mpn>");
                     /* Condition */
                     fwrite($this->_finalFeedFile, "<g:condition><![CDATA[new]]></g:condition>");
+
+                    // if product is simple with parent, get parent sku
+                    if(!empty($feedProduct['parent_id']) && ($feedProduct['type_id'] == 'simple' || $feedProduct['type_id'] == 'virtual' || $feedProduct['type_id'] == 'downloadable')) {
+                        foreach ($feedProducts as $checkSkuParent) {
+                            if($checkSkuParent['entity_id'] == $feedProduct['parent_id']) {
+                                fwrite($this->_finalFeedFile,
+                                    "<g:item_group_id><![CDATA[" . $checkSkuParent['sku'] . "]]></g:item_group_id>");
+                            }
+                        }
+                    }
+
+                    if(!empty($configurableOptions)) {
+                        foreach ($configurableOptions as $childSku => $options) {
+                            fwrite($this->_finalFeedFile,
+                                "<child_sku><![CDATA[" . $childSku . "]]></child_sku>");
+
+                            foreach ($options as $attributeCode => $value) {
+                                fwrite($this->_finalFeedFile,
+                                    "<" . $attributeCode . "><![CDATA[" . $value . "]]></" . $attributeCode . ">");
+                            }
+                        }
+                    }
+
                     /* Shipping OPEN */
                     fwrite($this->_finalFeedFile, "<g:shipping>");
                     /* Shipping Country */
@@ -318,44 +349,6 @@ class FeedFile
                     /* Shipping Price */
                     fwrite($this->_finalFeedFile,
                         "<g:price><![CDATA[" . $this->_feedFields->getShippingCost() . " " . $productCurrency . "]]></g:price>");
-
-                    // if product is simple with parent, get parent sku
-                    if(!empty($feedProduct['parent_id']) && ($feedProduct['type_id'] == 'simple' || $feedProduct['type_id'] == 'virtual' || $feedProduct['type_id'] == 'downloadable')) {
-                        foreach ($feedProducts as $checkSkuParent) {
-                            if($checkSkuParent['entity_id'] == $feedProduct['parent_id']) {
-                                fwrite($this->_finalFeedFile,
-                                    "<g:item_group_id><![CDATA[" . $checkSkuParent['sku'] . "]]></g:item_group_id>");
-                            }
-                        }
-                    }
-
-                    if(!empty($childrenSkus)) {
-                        fwrite($this->_finalFeedFile,
-                            "<g:children><![CDATA[" . implode(',', $childrenSkus) . "]]></g:children>");
-                    }
-
-                    if(!empty($configurableOptions)) {
-                        fwrite($this->_finalFeedFile,
-                            "<g:configurable_option>");
-
-                        foreach ($configurableOptions as $childSku => $options) {
-                            fwrite($this->_finalFeedFile,
-                                "<item>");
-                            fwrite($this->_finalFeedFile,
-                                "<child_sku><![CDATA[" . $childSku . "]]></child_sku>");
-
-                            foreach ($options as $attributeCode => $value) {
-                                fwrite($this->_finalFeedFile,
-                                    "<" . $attributeCode . "><![CDATA[" . $value . "]]></>");
-                            }
-                            fwrite($this->_finalFeedFile,
-                                "</item>");
-                        }
-
-                        fwrite($this->_finalFeedFile,
-                            "</g:configurable_option>");
-                    }
-
                     /* Shipping CLOSE */
                     fwrite($this->_finalFeedFile, "</g:shipping>");
                     $customMultipleFields = $this->dataHelper->getCustomMultipleFields();
