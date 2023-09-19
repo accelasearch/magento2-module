@@ -142,8 +142,8 @@ class FeedProducts
             Visibility::VISIBILITY_NOT_VISIBLE
         ));
 
-        $this->childrenType = 'simple,virtual,downloadable';
-        $this->fatherType = 'bundle,grouped,configurable';
+        $this->childrenType = '"simple","virtual","downloadable"';
+        $this->fatherType = '"bundle","grouped","configurable"';
 
         return array("success" => true);
     }
@@ -270,10 +270,10 @@ class FeedProducts
 
         switch ($productsBehavior) {
             case ProductTypeToExport::CHILDREN_ONLY:
-                $sqlFeedProductsSel .= 'AND cpe.type_id IN ' . $this->childrenType . ' ';
+                $sqlFeedProductsSel .= 'AND cpe.type_id IN (' . $this->childrenType . ') ';
                 break;
             case ProductTypeToExport::CONFIGURABLES_ONLY:
-                $sqlFeedProductsSel .= 'AND cpe.type_id IN ' . $this->fatherType . ' ';
+                $sqlFeedProductsSel .= 'AND cpe.type_id IN (' . $this->fatherType . ') ';
                 break;
             case ProductTypeToExport::CONFIGURABLES_AND_CHILDREN:
             default:
