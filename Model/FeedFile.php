@@ -309,9 +309,21 @@ class FeedFile
                     fwrite($this->_finalFeedFile,
                         "<g:brand><![CDATA[" . $this->_feedFields->getBrand() . "]]></g:brand>");
                     /* GTIN */
-                    fwrite($this->_finalFeedFile, "<g:gtin><![CDATA[" . $this->_feedFields->getGtin() . "]]></g:gtin>");
-                    /* MPN */
-                    fwrite($this->_finalFeedFile, "<g:mpn><![CDATA[" . $this->_feedFields->getMpn() . "]]></g:mpn>");
+                    $gTins = $this->_feedFields->getGtin();
+                    if ($gTins || $gTins === ''){
+                        $gTins = explode(",", $gTins);
+                        foreach ($gTins as $gTin){
+                            fwrite($this->_finalFeedFile, "<g:gtin><![CDATA[" . $gTin . "]]></g:gtin>");
+                        }
+                    }
+                    /* GTIN */
+                    $mpns = $this->_feedFields->getMpn();
+                    if ($mpns || $mpns === ''){
+                        $mpns = explode(",", $mpns);
+                        foreach ($mpns as $mpn){
+                            fwrite($this->_finalFeedFile, "<g:mpn><![CDATA[" . $mpn . "]]></g:mpn>");
+                        }
+                    }
                     /* Condition */
                     fwrite($this->_finalFeedFile, "<g:condition><![CDATA[new]]></g:condition>");
 
