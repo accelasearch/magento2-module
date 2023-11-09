@@ -110,7 +110,6 @@ class DynamicPrice implements DynamicPriceInterface
                 try {
                     $product = $this->productRepository->get($id);
                     if ($product->getStatus() == Status::STATUS_ENABLED) {
-                        $listingPrice = (float)$product->getData($this->data->getConfig(self::LISTING_PRICE_PATH));
                         $listingPrice = $this->taxHelper->getTaxPrice($product, $product->getData($this->data->getConfig(self::LISTING_PRICE_PATH)));
                         $sellingPrice = $this->taxHelper->getTaxPrice($product, $product->getFinalPrice());
                         if ($sellingPrice === 0.0) {
