@@ -58,14 +58,13 @@ class FeedFile
      * @param Data $dataHelper
      */
     public function __construct(
-        DirectoryList     $directoryList,
-        File              $io,
+        DirectoryList $directoryList,
+        File $io,
         ProductRepository $productRepository,
-        FeedFields        $feedFields,
-        Logger            $logger,
-        Data              $dataHelper
-    )
-    {
+        FeedFields $feedFields,
+        Logger $logger,
+        Data $dataHelper
+    ) {
         $this->_directoryList = $directoryList;
         $this->_io = $io;
         $this->_productRepository = $productRepository;
@@ -169,7 +168,7 @@ class FeedFile
             // PRODUCTS ITERATION
             foreach ($feedProducts as $feedProduct) {
                 try {
-                    if(!$this->parentEnable($store, $feedProducts, $feedProduct)) {
+                    if (!$this->parentEnable($store, $feedProducts, $feedProduct)) {
                         continue;
                     }
 
@@ -208,12 +207,12 @@ class FeedFile
                             $minPrice = $minPrice == 0 || $child->getPrice() < $minPrice ? $child->getPrice() : $minPrice;
                             $minSpecial = $minSpecial == 0 || $child->getPrice() < $minSpecial ? $child->getPrice() : $minSpecial;
 
-                            if($productsBehavior != ProductTypeToExport::CONFIGURABLES_ONLY) {
+                            if ($productsBehavior != ProductTypeToExport::CONFIGURABLES_ONLY) {
                                 continue;
                             }
 
                             foreach ($superAttributeList as $attributeCode) {
-                                $configurableOptions[$child->getSku()][$attributeCode] = $child->getAttributeText($attributeCode);
+                                $configurableOptions[$child->getSku()][$attributeCode] = $this->dataHelper->getAttributeText($attributeCode, $child);
                             }
                         }
                     }
@@ -310,17 +309,17 @@ class FeedFile
                         "<g:brand><![CDATA[" . $this->_feedFields->getBrand() . "]]></g:brand>");
                     /* GTIN */
                     $gTins = $this->_feedFields->getGtin();
-                    if ($gTins || $gTins === ''){
+                    if ($gTins || $gTins === '') {
                         $gTins = explode(",", $gTins);
-                        foreach ($gTins as $gTin){
+                        foreach ($gTins as $gTin) {
                             fwrite($this->_finalFeedFile, "<g:gtin><![CDATA[" . $gTin . "]]></g:gtin>");
                         }
                     }
                     /* GTIN */
                     $mpns = $this->_feedFields->getMpn();
-                    if ($mpns || $mpns === ''){
+                    if ($mpns || $mpns === '') {
                         $mpns = explode(",", $mpns);
-                        foreach ($mpns as $mpn){
+                        foreach ($mpns as $mpn) {
                             fwrite($this->_finalFeedFile, "<g:mpn><![CDATA[" . $mpn . "]]></g:mpn>");
                         }
                     }
@@ -328,16 +327,16 @@ class FeedFile
                     fwrite($this->_finalFeedFile, "<g:condition><![CDATA[new]]></g:condition>");
 
                     // if product is simple with parent, get parent sku
-                    if(!empty($feedProduct['parent_id']) && ($feedProduct['type_id'] == 'simple' || $feedProduct['type_id'] == 'virtual' || $feedProduct['type_id'] == 'downloadable')) {
+                    if (!empty($feedProduct['parent_id']) && ($feedProduct['type_id'] == 'simple' || $feedProduct['type_id'] == 'virtual' || $feedProduct['type_id'] == 'downloadable')) {
                         foreach ($feedProducts as $checkSkuParent) {
-                            if($checkSkuParent['entity_id'] == $feedProduct['parent_id']) {
+                            if ($checkSkuParent['entity_id'] == $feedProduct['parent_id']) {
                                 fwrite($this->_finalFeedFile,
                                     "<g:item_group_id><![CDATA[" . $checkSkuParent['sku'] . "]]></g:item_group_id>");
                             }
                         }
                     }
 
-                    if(!empty($configurableOptions)) {
+                    if (!empty($configurableOptions)) {
                         foreach ($configurableOptions as $childSku => $options) {
                             fwrite($this->_finalFeedFile,
                                 "<child_sku><![CDATA[" . $childSku . "]]></child_sku>");
@@ -383,12 +382,12 @@ class FeedFile
                     foreach ($customFields as $customField) {
                         if (!empty($customField["node_name"]) && !empty($customField["attribute_code"])) {
                             fwrite($this->_finalFeedFile,
-                                "<" . $customField["node_name"] . "><![CDATA[" . $this->_feedFields->getCustomAttribute($customField["attribute_code"] , true) . "]]></" . $customField["node_name"] . ">");
+                                "<" . $customField["node_name"] . "><![CDATA[" . $this->_feedFields->getCustomAttribute($customField["attribute_code"], true) . "]]></" . $customField["node_name"] . ">");
                         }
                     }
                     fwrite($this->_finalFeedFile, "<sconto><![CDATA[" . $scontoPercentuale . "]]></sconto>");
                     fwrite($this->_finalFeedFile, "</item>\n");
-                } catch (Exception $exception){
+                } catch (Exception $exception) {
                     $this->_logger->warning("product $productSku skipped, error: " . $exception->getMessage());
                 }
             }
@@ -403,9 +402,10 @@ class FeedFile
         return array("success" => true);
     }
 
-    protected function parentEnable($store, $feedProducts, $feedProduct) {
+    protected function parentEnable($store, $feedProducts, $feedProduct)
+    {
         // if parent id is empty, the product is a configurable or a simple directly saleable
-        if(empty($feedProduct['parent_id'])) {
+        if (empty($feedProduct['parent_id'])) {
             return true;
         }
 
@@ -419,7 +419,7 @@ class FeedFile
         // if children + configurable, enabled child can be exported by query if its parent is disable
         if ($productsBehavior == ProductTypeToExport::CONFIGURABLES_AND_CHILDREN) {
             foreach ($feedProducts as $checkStatusParent) {
-                if($checkStatusParent['entity_id'] == $feedProduct['parent_id']) {
+                if ($checkStatusParent['entity_id'] == $feedProduct['parent_id']) {
                     return true;
                 }
             }
