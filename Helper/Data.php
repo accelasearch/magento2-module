@@ -1,4 +1,5 @@
 <?php
+
 namespace AccelaSearch\Search\Helper;
 
 use AccelaSearch\Search\Constants;
@@ -67,8 +68,7 @@ class Data extends AbstractHelper
         Logger $logger,
         Json $jsonSerializer,
         AttributeRepositoryInterface $attributeRepository
-    )
-    {
+    ) {
         $this->_storeManager = $storeManager;
         $this->_resource = $resource;
         $this->_directoryList = $directoryList;
@@ -99,7 +99,7 @@ class Data extends AbstractHelper
             if (!$this->dbmage_read) {
                 $this->dbmage_read = $this->_resource->getConnection('core_read');
             }
-        } catch(\Exception $exception) {
+        } catch (\Exception $exception) {
             $this->_logger->error("Error in " . __METHOD__ . ": DB Magento connection error");
             return
                 array("success" => false,
@@ -133,8 +133,7 @@ class Data extends AbstractHelper
         $config_path,
         $config_scope = Config::SCOPE_TYPE_DEFAULT,
         $config_code = null
-    )
-    {
+    ) {
         return $this->scopeConfig->isSetFlag($config_path, $config_scope, $config_code);
     }
 
@@ -150,15 +149,15 @@ class Data extends AbstractHelper
         $config_path,
         $config_scope = Config::SCOPE_TYPE_DEFAULT,
         $config_code = null
-    )
-    {
+    ) {
         return (string)$this->scopeConfig->getValue($config_path, $config_scope, $config_code);
     }
 
     /**
      * @return array|bool|float|int|mixed|string|null
      */
-    public function getCustomFields(){
+    public function getCustomFields()
+    {
         $value = $this->getConfig('accelasearch_search/fields/custom_fields');
         return $value ? $this->jsonSerializer->unserialize($value) : [];
     }
@@ -166,7 +165,8 @@ class Data extends AbstractHelper
     /**
      * @return array|bool|float|int|mixed|string|null
      */
-    public function getCustomMultipleFields(){
+    public function getCustomMultipleFields()
+    {
         $value = $this->getConfig('accelasearch_search/fields/custom_multiple_fields');
         return $value ? $this->jsonSerializer->unserialize($value) : [];
     }
@@ -217,15 +217,13 @@ class Data extends AbstractHelper
                 if ($createLock) {
                     touch($locksFile);
                 }
-            }
-            else {
+            } else {
                 return array(
                     "success" => false,
                     "message" => "The lock file " . Constants::FILE_LOCK . " already exists!"
                 );
             }
-        }
-        // lock file doesn't exist
+        } // lock file doesn't exist
         else {
             if ($createLock) {
                 // If lock file directory doesn't exist
@@ -331,5 +329,37 @@ class Data extends AbstractHelper
         }
 
         return array("success" => true, "logFilePath" => $logFilePath);
+    }
+
+    public function getAttributeText($attributeCode, $product)
+    {
+        try {
+            if (empty($attributeCode)) {
+                return '';
+            }
+
+            if (empty($product->getData($attributeCode))) {
+                return '';
+            }
+
+            $resource = $product->getResource();
+            if (empty($resource)) {
+                return '';
+            }
+
+            $attribute = $resource->getAttribute($attributeCode);
+            if (empty($attribute)) {
+                return '';
+            }
+
+            $source = $attribute->getSource();
+            if (empty($source)) {
+                return '';
+            }
+
+            return $source->getOptionText($product->getData($attributeCode));
+        } catch (\Exception $e) {
+            return '';
+        }
     }
 }

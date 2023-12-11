@@ -598,7 +598,7 @@ class FeedFields
                     $this->productAttributes[$attributeCode] = $this->attributeRepository->get($attributeCode);
                 }
                 if ($this->productAttributes[$attributeCode]->getFrontendInput() === "select" || $this->productAttributes[$attributeCode]->getFrontendInput() === "multiselect") {
-                    //$result = $this->_product->getAttributeText($attributeCode);
+                    //$result = $this->_helper->getAttributeText($attributeCode, $this->_product);
                     $result = $this->_product->getResource()
                         ->getAttribute($attributeCode)
                         ->setStoreId($this->_storeId)
@@ -711,15 +711,15 @@ class FeedFields
 
         // if Magento Manufacturer
         if (Constants::BRAND_ATTRIBUTE_DEFAULT === $productBrandAttribute) {
-            if ($this->_product->getAttributeText('manufacturer')) {
-                $productBrand = $this->_product->getAttributeText('manufacturer');
+            if ($this->_helper->getAttributeText('manufacturer', $this->_product)) {
+                $productBrand = $this->_helper->getAttributeText('manufacturer', $this->_product);
             } else {
                 $this->_verboseLogger->warning("No Manufacturer or Brand found for product:" . $this->_productSku);
             }
         } // if free text
         else if (Constants::BRAND_ATTRIBUTE_BRAND === $productBrandAttribute) {
-            if ($this->_product->getAttributeText('brand')) {
-                $productBrand = $this->_product->getAttributeText('brand');
+            if ($this->_helper->getAttributeText('brand', $this->_product)) {
+                $productBrand = $this->_helper->getAttributeText('brand', $this->_product);
             } else {
                 $this->_verboseLogger->warning("No Manufacturer or Brand found for product:" . $this->_productSku);
             }

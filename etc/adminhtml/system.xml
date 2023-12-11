@@ -219,7 +219,7 @@
                         <field id="accelasearch_search/feed/status">1</field>
                         <field id="accelasearch_search/fields/product_brand">free_text</field>
                     </depends>
-
+                    <validate>required-entry</validate>
                     <comment>
                         <![CDATA[This name will be assigned to all products.]]>
                     </comment>
