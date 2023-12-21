@@ -243,9 +243,9 @@ class FeedProducts
             AND cpevisibility.attribute_id = $this->_visibility_attribute
             AND cpevisibility.store_id IN (0, $storeView) "
 
-            . // checking the product price on 'catalog_product_index_price' table
-            "LEFT JOIN $tableCatalogProductEntityDecimal AS cped
-            ON cpe.entity_id = cped.entity_id AND cped.attribute_id = {$this->_helper->getAttributeIdByCode('price')} "
+//            . // checking the product price on 'catalog_product_index_price' table
+//            "LEFT JOIN $tableCatalogProductEntityDecimal AS cped
+//            ON cpe.entity_id = cped.entity_id AND cped.attribute_id = {$this->_helper->getAttributeIdByCode('price')} "
 
             . // checking the product stock on 'cataloginventory_stock_item' table
             "LEFT JOIN $tableCataloginventoryStockItem csi
@@ -295,7 +295,7 @@ class FeedProducts
         if (!empty($stockBehavior)) $sqlFeedProductsSel .= "AND csi.is_in_stock IN ($stockBehavior) ";
 
         // only products with price >= 0.01
-        $sqlFeedProductsSel .= "AND cped.value >= 0.01 ";
+//        $sqlFeedProductsSel .= "AND cped.value >= 0.01 ";
         // Order by
         $sqlFeedProductsSel .= "ORDER BY cpe.entity_id";
 
