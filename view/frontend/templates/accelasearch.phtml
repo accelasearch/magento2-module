@@ -24,7 +24,7 @@ if ($configHelper->isPublishedCurrencyCode()) {
     <link rel="stylesheet" type="text/css" media="all" href="<?= $css_url ?>"/>
 <?php endif; ?>
 <?php if ($js_url) : ?>
-    <script src="<?= $js_url ?>"></script>
+    <script defer src="<?= $js_url ?>"></script>
 <?php endif; ?>
 
 <?php if ($userHelper->isLoggedIn()): ?>
