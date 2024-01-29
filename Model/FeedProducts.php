@@ -183,6 +183,9 @@ class FeedProducts
                 ScopeInterface::SCOPE_STORE,
                 $store->getCode()
             );
+        $categoriesSelected = trim($categoriesSelected);
+        $categoriesSelected = trim($categoriesSelected, ',');
+
         $categoriesSelectedArray = explode(",", $categoriesSelected);
 
         $stockBehavior = $this->_helper->getConfig(
