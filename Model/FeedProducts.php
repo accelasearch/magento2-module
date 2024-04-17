@@ -223,7 +223,9 @@ class FeedProducts
         $tableCatalogProductRelation = $this->_helper->getMagentoTableWithPrefix(
             Constants::TABLE_MAGENTO_CATALOG_PRODUCT_RELATION);
 
-        $sqlFeedProductsSel = "SELECT DISTINCT cpe.entity_id, cpe.type_id, cpe.sku, csi.qty, csi.is_in_stock, cpr.parent_id
+        $sqlFeedProductsSel = "SELECT DISTINCT cpe.entity_id, cpe.type_id, cpe.sku, csi.qty, csi.is_in_stock, cpr.parent_id, cpevisibility.value AS visibility,
+            MAX(CASE WHEN cpestatus.store_id = 0 THEN cpestatus.value ELSE NULL END) AS cpestatus_value_0,
+            MAX(CASE WHEN cpestatus.store_id = $storeView THEN cpestatus.value ELSE NULL END) AS cpestatus_value_$storeView
             FROM $tableCatalogProductEntity cpe "
             . // to get 'website_id'
             "JOIN $tableCatalogProductWebsite cpw
@@ -256,8 +258,7 @@ class FeedProducts
 
             .
             "LEFT JOIN $tableCatalogProductRelation cpr
-            ON cpe.entity_id = cpr.child_id"
-        ;
+            ON cpe.entity_id = cpr.child_id";
 
         /*
         . // checking the categories product on 'catalog_category_product' table
@@ -267,8 +268,7 @@ class FeedProducts
 
         // checking 'status' and 'visibility'
         $sqlFeedProductsSel .= "
-            WHERE cpestatus.value = $this->_status
-            AND cpevisibility.value IN ($this->_visibility)
+            WHERE cpevisibility.value IN ($this->_visibility)
         ";
 
         switch ($productsBehavior) {
@@ -300,12 +300,21 @@ class FeedProducts
         // only products with price >= 0.01
 //        $sqlFeedProductsSel .= "AND cped.value >= 0.01 ";
         // Order by
+        $sqlFeedProductsSel .= "GROUP BY cpe.entity_id, cpe.type_id, cpe.sku, csi.qty, csi.is_in_stock, cpr.parent_id ";
         $sqlFeedProductsSel .= "ORDER BY cpe.entity_id";
 
         $this->_logger->debug("Query: $sqlFeedProductsSel");
 
         try {
             $collection = $this->_helper->dbmage_read->fetchAll($sqlFeedProductsSel);
+
+            foreach ($collection as $k => $v) {
+                $status = $v['cpestatus_value_' . $storeView] === null ? $v['cpestatus_value_0'] : $v['cpestatus_value_' . $storeView];
+
+                if ($status != Status::STATUS_ENABLED) {
+                    unset($collection[$k]);
+                }
+            }
         } catch (\Exception $exception) {
             return array(
                 "success" => false,

@@ -5,6 +5,7 @@ namespace AccelaSearch\Search\Model;
 use AccelaSearch\Search\Constants;
 use AccelaSearch\Search\Helper\Data;
 use Exception;
+use Magento\Catalog\Model\Product\Visibility;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\Filesystem\Io\File;
 use Magento\Catalog\Model\ProductRepository;
@@ -422,6 +423,15 @@ class FeedFile
                 if ($checkStatusParent['entity_id'] == $feedProduct['parent_id']) {
                     return true;
                 }
+            }
+
+            $checkVisibility = [
+                Visibility::VISIBILITY_BOTH,
+                Visibility::VISIBILITY_IN_SEARCH,
+                Visibility::VISIBILITY_IN_CATALOG
+            ];
+            if(in_array($feedProduct['visibility'], $checkVisibility)) {
+                return true;
             }
 
             return false;
