@@ -48,7 +48,7 @@ class Data extends AbstractHelper
     /**
      * @var AttributeRepositoryInterface
      */
-    protected $attributeRepository;
+    protected $_attributeRepository;
 
     /**
      * Data constructor.
