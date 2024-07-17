@@ -2,10 +2,13 @@
 
 namespace AccelaSearch\Search\Helper;
 
+use AccelaSearch\Search\Block\System\Config\PriceType;
 use AccelaSearch\Search\Constants;
 use Magento\Catalog\Model\Product;
+use Magento\CatalogRule\Model\Rule;
 use Magento\Eav\Api\AttributeRepositoryInterface;
 use Magento\Eav\Model\AttributeRepository;
+use Magento\Framework\App\Area;
 use Magento\Framework\App\Config;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\Exception\FileSystemException;
@@ -14,8 +17,11 @@ use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\Serialize\Serializer\Json;
+use Magento\Store\Model\App\Emulation;
+use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use AccelaSearch\Search\Logger\Logger;
+use Magento\Catalog\Helper\Data as CatalogHelper;
 
 /**
  * Class Data
@@ -23,6 +29,12 @@ use AccelaSearch\Search\Logger\Logger;
  */
 class Data extends AbstractHelper
 {
+
+    const LISTING_PRICE_PATH = 'accelasearch_search/dynamicprice/listing_price';
+    const LISTING_PRICE_TYPE = 'accelasearch_search/dynamicprice/listing_price_type';
+    const SELLING_PRICE_PATH = 'accelasearch_search/dynamicprice/selling_price';
+    const SELLING_PRICE_TYPE = 'accelasearch_search/dynamicprice/selling_price_type';
+
     public $dbmage_read;
 
     /**
@@ -49,6 +61,18 @@ class Data extends AbstractHelper
      * @var AttributeRepositoryInterface
      */
     protected $_attributeRepository;
+    /**
+     * @var Emulation
+     */
+    private $emulation;
+    /**
+     * @var Rule
+     */
+    private $rule;
+    /**
+     * @var CatalogHelper
+     */
+    private $catalogHelper;
 
     /**
      * Data constructor.
@@ -61,20 +85,27 @@ class Data extends AbstractHelper
      * @param Json $jsonSerializer
      */
     public function __construct(
-        Context $context,
-        StoreManagerInterface $storeManager,
-        ResourceConnection $resource,
-        DirectoryList $directoryList,
-        Logger $logger,
-        Json $jsonSerializer,
-        AttributeRepositoryInterface $attributeRepository
-    ) {
+        Context                      $context,
+        StoreManagerInterface        $storeManager,
+        ResourceConnection           $resource,
+        DirectoryList                $directoryList,
+        Logger                       $logger,
+        Json                         $jsonSerializer,
+        AttributeRepositoryInterface $attributeRepository,
+        Emulation                    $emulation,
+        Rule                         $rule,
+        CatalogHelper                $catalogHelper
+    )
+    {
         $this->_storeManager = $storeManager;
         $this->_resource = $resource;
         $this->_directoryList = $directoryList;
         $this->_logger = $logger;
         $this->jsonSerializer = $jsonSerializer;
         $this->_attributeRepository = $attributeRepository;
+        $this->emulation = $emulation;
+        $this->rule = $rule;
+        $this->catalogHelper = $catalogHelper;
         parent::__construct($context);
     }
 
@@ -133,7 +164,8 @@ class Data extends AbstractHelper
         $config_path,
         $config_scope = Config::SCOPE_TYPE_DEFAULT,
         $config_code = null
-    ) {
+    )
+    {
         return $this->scopeConfig->isSetFlag($config_path, $config_scope, $config_code);
     }
 
@@ -149,7 +181,8 @@ class Data extends AbstractHelper
         $config_path,
         $config_scope = Config::SCOPE_TYPE_DEFAULT,
         $config_code = null
-    ) {
+    )
+    {
         return (string)$this->scopeConfig->getValue($config_path, $config_scope, $config_code);
     }
 
@@ -361,5 +394,61 @@ class Data extends AbstractHelper
         } catch (\Exception $e) {
             return '';
         }
+    }
+
+    /**
+     * @param $product \Magento\Catalog\Api\Data\ProductInterface
+     * @return mixed
+     */
+    public function getSellingPrice($product, $store)
+    {
+
+        $priceAttribute = $this->scopeConfig->getValue(self::SELLING_PRICE_PATH,ScopeInterface::SCOPE_STORE,$store->getCode());
+        $priceType = $this->scopeConfig->getValue(self::SELLING_PRICE_TYPE,ScopeInterface::SCOPE_STORE,$store->getCode());
+        $isVatInclude = $priceType == PriceType::VAT_INCLUDE;
+
+        return $this->getFeedPrice($product,$store,$priceAttribute,$isVatInclude);
+
+    }
+
+    /**
+     * @param $product \Magento\Catalog\Api\Data\ProductInterface
+     * @return mixed
+     */
+    public function getListingPrice($product, $store)
+    {
+        $priceAttribute = $this->scopeConfig->getValue(self::LISTING_PRICE_PATH, ScopeInterface::SCOPE_STORE, $store->getCode());
+        $priceType = $this->scopeConfig->getValue(self::LISTING_PRICE_TYPE,ScopeInterface::SCOPE_STORE, $store->getCode());
+        $isVatInclude = $priceType == PriceType::VAT_INCLUDE;
+
+        return $this->getFeedPrice($product,$store,$priceAttribute,$isVatInclude);
+
+    }
+
+    /**
+     * @param $product \Magento\Catalog\Api\Data\ProductInterface
+     * @param $store
+     * @param string $priceAttribute
+     * @param bool $includeVat
+     * @return mixed
+     */
+    public function getFeedPrice($product, $store, string $priceAttribute, bool $includeVat)
+    {
+        if ($priceAttribute == "final_price") {
+            $price = $product->getFinalPrice();
+            $this->emulation->startEnvironmentEmulation($store->getId(), Area::AREA_FRONTEND, true);
+            $afterRulesPrice = $this->rule->calcProductPriceRule($product, $product->getPrice());
+            if ($afterRulesPrice && ($price > $afterRulesPrice)) {
+                $price = $afterRulesPrice;
+            }
+            $this->emulation->stopEnvironmentEmulation();
+            return $this->catalogHelper->getTaxPrice($product, $price, $includeVat);
+
+
+        }
+
+        $price = $product->getData($priceAttribute);
+        return $this->catalogHelper->getTaxPrice($product, $price, $includeVat);
+
     }
 }

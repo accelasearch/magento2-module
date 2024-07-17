@@ -3,6 +3,7 @@
 namespace AccelaSearch\Search\Service;
 
 use AccelaSearch\Search\Api\DynamicPriceInterface;
+use AccelaSearch\Search\Block\System\Config\PriceType;
 use AccelaSearch\Search\Helper\Data;
 use AccelaSearch\Search\Logger\Logger;
 use Exception;
@@ -20,6 +21,9 @@ use Magento\Catalog\Helper\Data as TaxHelper;
 class DynamicPrice implements DynamicPriceInterface
 {
     const LISTING_PRICE_PATH = 'accelasearch_search/dynamicprice/listing_price';
+    const LISTING_PRICE_TYPE = 'accelasearch_search/dynamicprice/listing_price_type';
+    const SELLING_PRICE_PATH = 'accelasearch_search/dynamicprice/selling_price';
+    const SELLING_PRICE_TYPE = 'accelasearch_search/dynamicprice/selling_price_type';
     const CACHE_LIFETIME_PATH = 'accelasearch_search/dynamicprice/cache_lifetime';
 
     /**
@@ -59,6 +63,7 @@ class DynamicPrice implements DynamicPriceInterface
      * @var SerializerInterface
      */
     private SerializerInterface $serializer;
+    private TaxHelper $taxHelper;
 
     /**
      * @param ProductRepositoryInterface $productRepository
@@ -110,16 +115,24 @@ class DynamicPrice implements DynamicPriceInterface
                 try {
                     $product = $this->productRepository->get($id);
                     if ($product->getStatus() == Status::STATUS_ENABLED) {
-                        $listingPrice = $this->taxHelper->getTaxPrice($product, $product->getData($this->data->getConfig(self::LISTING_PRICE_PATH)));
-                        $sellingPrice = $this->taxHelper->getTaxPrice($product, $product->getFinalPrice());
+
+                        $sellingPriceType = $this->data->getConfig(self::SELLING_PRICE_TYPE);
+                        $listingPriceType = $this->data->getConfig(self::LISTING_PRICE_TYPE);
+
+                        $sellingPriceIncludeTax = $sellingPriceType == PriceType::VAT_INCLUDE;
+                        $listingPriceIncludeTax = $listingPriceType == PriceType::VAT_INCLUDE;
+
+                        $listingPrice = $this->taxHelper->getTaxPrice($product, $this->getListingPrice($product),$listingPriceIncludeTax);
+                        $sellingPrice = $this->taxHelper->getTaxPrice($product, $this->getSellingPrice($product),$sellingPriceIncludeTax);
+
                         if ($sellingPrice === 0.0) {
                             $sellingPrice = (float)$product->getData('price');
                             if ($sellingPrice === 0.0 && $product->getTypeId() === Configurable::TYPE_CODE) {
                                 $productTypeInstance = $product->getTypeInstance();
                                 $minPrice = 0;
                                 foreach ($productTypeInstance->getUsedProducts($product) as $child) {
-                                    $childPrice = $this->taxHelper->getTaxPrice($child, $child->getData('price'));
-                                    $childFinal = $this->taxHelper->getTaxPrice($child, $child->getFinalPrice());
+                                    $childPrice = $this->taxHelper->getTaxPrice($child, $this->getListingPrice($child),$listingPriceIncludeTax);
+                                    $childFinal = $this->taxHelper->getTaxPrice($child, $this->getSellingPrice($child),$sellingPriceIncludeTax);
                                     if ($childFinal < $childPrice) {
                                         $childPrice = (float)$childFinal;
                                     }
@@ -135,8 +148,8 @@ class DynamicPrice implements DynamicPriceInterface
                             $minPriceListing = 0;
                             $minPriceSelling = 0;
                             foreach ($productTypeInstance->getUsedProducts($product) as $child) {
-                                $childPrice = $this->taxHelper->getTaxPrice($child, $child->getPrice());
-                                $childSellingPrice = $this->taxHelper->getTaxPrice($child, $child->getFinalPrice());
+                                $childPrice = $this->taxHelper->getTaxPrice($child, $this->getListingPrice($child),$listingPriceIncludeTax);
+                                $childSellingPrice = $this->taxHelper->getTaxPrice($child, $this->getSellingPrice($child),$sellingPriceIncludeTax);
                                 if ($child->isSaleable() && ($minPriceSelling === 0 || $minPriceSelling > $childSellingPrice)) {
                                     $minPriceListing = $childPrice;
                                     $minPriceSelling = $childSellingPrice;
@@ -166,7 +179,7 @@ class DynamicPrice implements DynamicPriceInterface
                         $return[] = $calculatedPrice;
                     }
                 } catch (Exception $exception) {
-                    $this->logger->error("DynamicPrice getPrices - error retrieving prices for product with id " . $id);
+                    $this->logger->error("DynamicPrice getPrices - error retrieving prices for product with id " . $id . ' Error:' . $exception->getMessage());
                 }
             } else {
                 $return[] = $cachedValue;
@@ -174,4 +187,40 @@ class DynamicPrice implements DynamicPriceInterface
         }
         return $return;
     }
+
+
+    /**
+     * @param $product \Magento\Catalog\Api\Data\ProductInterface
+     * @return mixed
+     */
+    public function getSellingPrice($product)
+    {
+
+        $sellingPriceAttribute = $this->data->getConfig(self::SELLING_PRICE_PATH);
+        $isFinal = $sellingPriceAttribute == "final_price";
+
+        if ($isFinal) {
+            return $product->getFinalPrice();
+        }
+        return $product->getData($sellingPriceAttribute);
+
+    }
+
+    /**
+     * @param $product \Magento\Catalog\Api\Data\ProductInterface
+     * @return mixed
+     */
+    public function getListingPrice($product)
+    {
+
+        $listingPriceAttribute = $this->data->getConfig(self::LISTING_PRICE_PATH);
+        $isFinal = $listingPriceAttribute == "final_price";
+
+        if ($isFinal) {
+            return $product->getFinalPrice();
+        }
+        return $product->getData($listingPriceAttribute);
+
+    }
+
 }

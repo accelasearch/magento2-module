@@ -49,6 +49,11 @@ class ListingPrice implements \Magento\Framework\Data\OptionSourceInterface
             );
         }
 
+        $options[] = array(
+            'label' => __("Final Price (calculated by Magento)"),
+            'value' => "final_price"
+        );
+
         return $options;
     }
 }

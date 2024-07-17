@@ -272,13 +272,13 @@ class FeedProducts
         ";
 
         switch ($productsBehavior) {
-            case ProductTypeToExport::CHILDREN_ONLY:
+            case ProductTypeToExport::SIMPLE_ONLY:
                 $sqlFeedProductsSel .= 'AND cpe.type_id IN (' . $this->childrenType . ') ';
                 break;
-            case ProductTypeToExport::CONFIGURABLES_ONLY:
-                $sqlFeedProductsSel .= 'AND cpe.type_id IN (' . $this->fatherType . ') ';
-                break;
-            case ProductTypeToExport::CONFIGURABLES_AND_CHILDREN:
+//            case ProductTypeToExport::CONFIGURABLE_AND_SIMPLE:
+//                $sqlFeedProductsSel .= 'AND cpe.type_id IN (' . $this->fatherType . ') ';
+//                break;
+//            case ProductTypeToExport::CONFIGURABLE_AND_CHILDREN_AND_SIMPLE:
             default:
                 $sqlFeedProductsSel .= '';
                 break;

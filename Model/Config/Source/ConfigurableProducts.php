@@ -6,9 +6,9 @@ use Magento\Framework\Data\OptionSourceInterface;
 
 class ConfigurableProducts implements OptionSourceInterface
 {
-    const CHILDREN_ONLY = 1;
-    const CONFIGURABLES_ONLY = 2;
-    const CONFIGURABLES_AND_CHILDREN = 3;
+    const SIMPLE_ONLY = 1;
+    const CONFIGURABLE_AND_SIMPLE = 2;
+    const CONFIGURABLE_AND_CHILDREN_AND_SIMPLE = 3;
 
     /**
      * @return array
@@ -21,16 +21,16 @@ class ConfigurableProducts implements OptionSourceInterface
                 'label' => ''
             ],
             [
-                'value' => self::CHILDREN_ONLY,
-                'label' => __('Only simple children')
+                'value' => self::SIMPLE_ONLY,
+                'label' => __('Simple products only')
             ],
             [
-                'value' => self::CONFIGURABLES_ONLY,
-                'label' => __('Only configurables')
+                'value' => self::CONFIGURABLE_AND_SIMPLE,
+                'label' => __('Configurable products and Simple products')
             ],
             [
-                'value' => self::CONFIGURABLES_AND_CHILDREN,
-                'label' => __('Configurables + children')
+                'value' => self::CONFIGURABLE_AND_CHILDREN_AND_SIMPLE,
+                'label' => __('Configurable products + children + Simple products')
             ]
         ];
     }
@@ -42,9 +42,9 @@ class ConfigurableProducts implements OptionSourceInterface
     {
         return [
             '' => '',
-            self::CHILDREN_ONLY => __('Only children'),
-            self::CONFIGURABLES_ONLY => __('Only configurables'),
-            self::CONFIGURABLES_AND_CHILDREN => __('Configurables + children')
+            self::SIMPLE_ONLY => __('Simple products only'),
+            self::CONFIGURABLE_AND_SIMPLE => __('Configurable products and Simple products'),
+            self::CONFIGURABLE_AND_CHILDREN_AND_SIMPLE => __('Configurable products + children + Simple products')
         ];
     }
 }

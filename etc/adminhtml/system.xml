@@ -449,22 +449,37 @@
             <group id="dynamicprice" translate="label" type="text" sortOrder="6"
                    showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>Dynamic Price</label>
-                <field id="listing_price" translate="label" type="select" sortOrder="1"
+                <field id="listing_price" translate="label" type="select" sortOrder="10"
                        showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Listing Price</label>
                     <source_model>AccelaSearch\Search\Block\System\Config\ListingPrice</source_model>
                 </field>
-                <field id="publish_visitor_type" translate="label" type="select" sortOrder="2"
+                <field id="listing_price_type" translate="label" type="select" sortOrder="20"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Listing Price Type</label>
+                    <source_model>AccelaSearch\Search\Block\System\Config\PriceType</source_model>
+                </field>
+                <field id="selling_price" translate="label" type="select" sortOrder="30"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Selling Price</label>
+                    <source_model>AccelaSearch\Search\Block\System\Config\ListingPrice</source_model>
+                </field>
+                <field id="selling_price_type" translate="label" type="select" sortOrder="40"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Selling Price Type</label>
+                    <source_model>AccelaSearch\Search\Block\System\Config\PriceType</source_model>
+                </field>
+                <field id="publish_visitor_type" translate="label" type="select" sortOrder="50"
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Publish Visitor Type</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="publish_currency_code" translate="label" type="select" sortOrder="3"
+                <field id="publish_currency_code" translate="label" type="select" sortOrder="60"
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Publish Currency Code</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="cache_lifetime" type="text" translate="label" sortOrder="3040" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="cache_lifetime" type="text" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Cache Lifetime</label>
                     <validate>integer</validate>
                 </field>

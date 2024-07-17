@@ -169,7 +169,32 @@ class FeedFile
             // PRODUCTS ITERATION
             foreach ($feedProducts as $feedProduct) {
                 try {
-                    if (!$this->parentEnable($store, $feedProducts, $feedProduct)) {
+
+
+
+                    if (!$this->isProductEnabled($feedProduct, $store)) {
+                        continue;
+                    }
+
+                    $isProductVisible = $this->isProductVisible($feedProduct);
+
+                    if (!$isProductVisible) {
+                        // all simple and configurable must be visible in order to export
+                        if ($productsBehavior == ProductTypeToExport::CONFIGURABLE_AND_SIMPLE ||
+                            $productsBehavior == ProductTypeToExport::SIMPLE_ONLY) {
+                            continue;
+                        }
+                    }
+
+                    if($isProductVisible && $productsBehavior == ProductTypeToExport::CONFIGURABLE_AND_SIMPLE) {
+                        // child product but visible on catalog
+                        if(isset($feedProduct['parent_id'])) {
+                            unset($feedProduct['parent_id']);
+                        }
+                    }
+
+
+                    if (!$this->isParentEnable($store, $feedProducts, $feedProduct)) {
                         continue;
                     }
 
@@ -179,10 +204,11 @@ class FeedFile
                     if (!$productId || !$productSku) {
                         continue;
                     }
-                    $this->_product = $this->_productRepository->getById($productId, false, $store->getId());
+                    $this->_product = $this->_productRepository->getById($productId, false, $store->getId(), true);
                     $this->_feedFields->setup($this->_product, $productSku, $store->getId());
 
                     $superAttributeList = [];
+                    $children = null;
                     if ($feedProduct['type_id'] == 'configurable') {
                         $typeInstance = $this->_product->getTypeInstance()->setStoreFilter($store->getId(), $this->_product);
 
@@ -205,10 +231,14 @@ class FeedFile
 
                     if (isset($children)) {
                         foreach ($children as $child) {
-                            $minPrice = $minPrice == 0 || $child->getPrice() < $minPrice ? $child->getPrice() : $minPrice;
-                            $minSpecial = $minSpecial == 0 || $child->getPrice() < $minSpecial ? $child->getPrice() : $minSpecial;
 
-                            if ($productsBehavior != ProductTypeToExport::CONFIGURABLES_ONLY) {
+                            $childListingPrice = $this->dataHelper->getListingPrice($child, $store);
+                            $childSellingPrice = $this->dataHelper->getSellingPrice($child, $store);
+
+                            $minPrice = $minPrice == 0 || $childListingPrice < $minPrice ? $childListingPrice : $minPrice;
+                            $minSpecial = $minSpecial == 0 || $childSellingPrice < $minSpecial ? $childSellingPrice : $minSpecial;
+
+                            if ($productsBehavior != ProductTypeToExport::CONFIGURABLE_AND_CHILDREN_AND_SIMPLE) {
                                 continue;
                             }
 
@@ -255,13 +285,13 @@ class FeedFile
                         continue;
                     }
                     /* price (required) */
-                    $productPrice = ($minPrice > 0) ? $minPrice : $this->_feedFields->getPrice();
+                    $productPrice = ($minPrice > 0) ? $minPrice : $this->dataHelper->getListingPrice($this->_product, $store);
                     if (!$productPrice) {
                         $this->_logger->warning("product $productSku skipped Price missing " . $productPrice);
                         continue;
                     }
 
-                    $productSpecialPrice = ($minSpecial > 0) ? $minSpecial : $this->_feedFields->getSpecialPrice();
+                    $productSpecialPrice = ($minSpecial > 0) ? $minSpecial : $this->dataHelper->getSellingPrice($this->_product, $store);
                     if ($productSpecialPrice <= 0) {
                         $productSpecialPrice = $productPrice;
                     }
@@ -403,7 +433,7 @@ class FeedFile
         return array("success" => true);
     }
 
-    protected function parentEnable($store, $feedProducts, $feedProduct)
+    protected function isParentEnable($store, $feedProducts, $feedProduct)
     {
         // if parent id is empty, the product is a configurable or a simple directly saleable
         if (empty($feedProduct['parent_id'])) {
@@ -416,27 +446,54 @@ class FeedFile
             $store->getCode()
         );
 
-        // if only children or only configurable, the status is already checked by query
-        // if children + configurable, enabled child can be exported by query if its parent is disable
-        if ($productsBehavior == ProductTypeToExport::CONFIGURABLES_AND_CHILDREN) {
+        if ($productsBehavior == ProductTypeToExport::CONFIGURABLE_AND_CHILDREN_AND_SIMPLE) {
             foreach ($feedProducts as $checkStatusParent) {
                 if ($checkStatusParent['entity_id'] == $feedProduct['parent_id']) {
-                    return true;
+                    if($this->isProductEnabled($checkStatusParent,$store)) {
+                        return true;
+                    }
                 }
             }
-
-            $checkVisibility = [
-                Visibility::VISIBILITY_BOTH,
-                Visibility::VISIBILITY_IN_SEARCH,
-                Visibility::VISIBILITY_IN_CATALOG
-            ];
-            if(in_array($feedProduct['visibility'], $checkVisibility)) {
-                return true;
-            }
-
-            return false;
         }
 
-        return true;
+        return false;
+    }
+
+    /**
+     * @param $feedProduct
+     * @param $store
+     * @return bool
+     */
+    private function isProductEnabled($feedProduct, $store) {
+
+        if(isset($feedProduct["cpestatus_value_".$store->getId()])) {
+            $storeEnabled = $feedProduct["cpestatus_value_".$store->getId()] != \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_DISABLED;
+            if($storeEnabled) {
+                return true;
+            }
+        } elseif(isset($feedProduct["cpestatus_value_0"])) {
+            $defaultEnabled = $feedProduct["cpestatus_value_0"] != \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_DISABLED;
+            if($defaultEnabled) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function isProductVisible($feedProduct)
+    {
+
+        $checkVisibility = [
+            Visibility::VISIBILITY_BOTH,
+            Visibility::VISIBILITY_IN_SEARCH,
+            Visibility::VISIBILITY_IN_CATALOG
+        ];
+        if(in_array($feedProduct['visibility'], $checkVisibility)) {
+            return true;
+        }
+
+        return false;
+
     }
 }

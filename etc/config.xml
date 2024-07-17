@@ -22,6 +22,9 @@
             </sync>
             <dynamicprice>
                 <listing_price>price</listing_price>
+                <listing_price_type>1</listing_price_type>
+                <selling_price>final_price</selling_price>
+                <selling_price_type>1</selling_price_type>
                 <publish_visitor_type>1</publish_visitor_type>
                 <publish_currency_code>1</publish_currency_code>
             </dynamicprice>
