@@ -2,6 +2,9 @@
 namespace AccelaSearch\Search\Cron;
 
 use AccelaSearch\Search\Constants;
+use Magento\Framework\App\Area;
+use Magento\Framework\App\State;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreRepository;
 use AccelaSearch\Search\Model\FeedProducts;
@@ -49,6 +52,11 @@ class FeedGeneration
     protected $_logger;
 
     /**
+     * @var State
+     */
+    protected $_state;
+
+    /**
      * FeedGeneration constructor.
      *
      * @param StoreRepository $storeRepository
@@ -64,7 +72,8 @@ class FeedGeneration
         FeedFile $feedFile,
         Notifications $notifications,
         Data $helper,
-        Logger $logger
+        Logger $logger,
+        State $state
     )
     {
         $this->_storeRepository = $storeRepository;
@@ -73,6 +82,7 @@ class FeedGeneration
         $this->_notifications = $notifications;
         $this->_helper = $helper;
         $this->_logger = $logger;
+        $this->_state = $state;
     }
 
     /**
@@ -82,6 +92,11 @@ class FeedGeneration
      */
     public function generateFeed()
     {
+        try {
+            $area = $this->_state->getAreaCode();
+        } catch (LocalizedException $e) {
+            $this->_state->setAreaCode(Area::AREA_ADMINHTML);
+        }
         // check extension script execution
         $result = $this->_helper->fileLockCheck();
         if (!$result["success"]) {
