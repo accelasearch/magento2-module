@@ -306,7 +306,7 @@ class FeedFields
                 if ($cat['name'] == 'trovaprezzi') continue;
                 $catName = $cat['name'];
                 // add category name replacing ';' character with space
-                $_categories .= str_replace($separator, ' ', $catName);
+                $_categories .= str_replace($separator, ' ', (string) $catName);
                 // add parent separator
                 $_categories .= $parent;
             }

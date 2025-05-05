@@ -85,6 +85,16 @@ ___
 ![Accelasearch Status](https://i.imgur.com/lVPasvn.jpg)
 
 Allows to specify a custom base URL, for example when using VUE to retrieve images of products
+
+___
+### Configurable Products Export
+![Accelasearch Status](screenshots/configurable_export.png)
+
+Allows to specify how products are exported
+
+- Simple products only
+- Configurable products and Simple products
+- Configurable products + children + Simple products
 ___
 ### Category
 ![Accelasearch Status](https://i.imgur.com/auLjdRz.jpg)
@@ -98,6 +108,17 @@ ___
 
 Specifies categories which shall be excluded by the category path generation process.
 As an example, if some categories are specific for some language, they should be excluded from the feed of other Storeviews.
+
+___
+### Stock behavior
+![Accelasearch Status](screenshots/feed_filters.png)
+This configuration is visible only per store or website.
+
+Select the stock behavior.
+Select in stock for export feed with products in stock or select in stock and out of stock for export both.
+
+The check is made on `cataloginventory_stock_item` table and currently multi source inventory is not supported.
+
 ___
 ### Search
 ![Accelasearch Status](https://i.imgur.com/gnEE6JH.jpg)
@@ -128,11 +149,18 @@ ___
 Allows to specify a set of email addresses to which notify products affected by errors during the feed generation process
 ___
 ### Dynamic Price
-![Accelasearch Status](https://i.imgur.com/OzLKnu9.jpg)
+![Accelasearch Status](screenshots/dynamic_price.png)
 
 Exposes an endpoint which AccelaSearch can query to get dynamic prices depending on type of customer and currency code.
 
-- Listing price: Attribute used to identify prices
+Prices on feed file will also follow this configuration when possible
+
+- Listing price: Attribute used to identify prices, **this configuration is used also for the feed file**
+- Listing price type: configure VAT included or excluded, **this configuration is used also for the feed file**
+- - VAT will work only if configured and tax class is correctly set on the product
+- Selling price: configure which attribute to use for price, **this configuration is used also for the feed file** 
+- Selling price type: configure VAT included or excluded, **this configuration is used also for the feed file**
+- - VAT will work only if configured and tax class is correctly set on the product
 - Public Visitor Type: Whether to export customer group
 - Public Currency Code: Whether to export currency code
 - Cache Lifetime: Time to live of dynamic price (used for caching)
@@ -152,3 +180,5 @@ Default cron expression (configurable through user interface):
 
 ## NOTE
 This modules generates a lock file under `var/locks` in order to prevent concurrent feed generation processes.
+Bundle and Grouped products are managed in similar way as Configurable products
+Multi Source Inventory is not managed by this module
