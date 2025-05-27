@@ -445,8 +445,16 @@ class FeedFields
             );
             if ($customBaseUrl) {
                 $base_url = $customBaseUrl;
-            }
+            } else {
+                $use_store_code = $this->_helper->getConfig('web/url/use_store');
 
+                if ((bool) $use_store_code) {
+                    if (substr($base_url, -1) !== '/') {
+                        $base_url .= '/';
+                    }
+                    $base_url = $base_url . $this->_helper->getStoreCodeById($storeId) . '/';
+                }
+            }
 
             // Seo Product Url Suffix
             $product_url_suffix = $this->_helper->getConfig(
