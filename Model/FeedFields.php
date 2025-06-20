@@ -490,11 +490,18 @@ class FeedFields
         $storeId = ($this->_storeId) ? $this->_storeId : $storeId;
 
         // product image
-        if ($this->_product->getData('image')
-            && $this->_product->getData('image') != ''
-            && $this->_product->getData('image') != Constants::NO_SELECTION) {
+        $imageLinkAttribute = $this->_helper->getConfig(
+            Constants::PATH_PRODUCT_IMAGE,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+
+        // product image
+        if ($this->_product->getData($imageLinkAttribute)
+            && $this->_product->getData($imageLinkAttribute) != ''
+            && $this->_product->getData($imageLinkAttribute) != Constants::NO_SELECTION) {
             // Product Url Key
-            $productImage = $this->_product->getData('image');
+            $productImage = $this->_product->getData($imageLinkAttribute);
         } // parent image
         else {
             // get, if it exists, parent Id

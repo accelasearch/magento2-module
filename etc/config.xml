@@ -8,6 +8,7 @@
                 <products_behavior>3</products_behavior>
             </feed>
             <fields>
+                <product_image>image</product_image>
                 <shipping_by_price_first_price>0</shipping_by_price_first_price>
                 <shipping_by_price_first_cost>0</shipping_by_price_first_cost>
                 <shipping_by_weight_first_weight>0</shipping_by_weight_first_weight>

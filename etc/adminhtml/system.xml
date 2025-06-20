@@ -210,6 +210,22 @@
                         <![CDATA[Select the attribute to map to product brand.]]>
                     </comment>
                 </field>
+
+                <!-- Product Image -->
+                <field id="product_image" translate="label comment" type="select" sortOrder="2"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Product Image</label>
+                    <source_model>AccelaSearch\Search\Model\Config\Backend\AttributeMediaImageType</source_model>
+
+                    <depends>
+                        <field id="accelasearch_search/feed/status">1</field>
+                    </depends>
+
+                    <comment>
+                        <![CDATA[Select the attribute to map to product image_link.]]>
+                    </comment>
+                </field>
+
                 <!-- Brand Name -->
                 <field id="brand_name" translate="label" type="text" sortOrder="3"
                        showInDefault="1" showInWebsite="1" showInStore="1">
