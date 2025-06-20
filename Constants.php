@@ -24,6 +24,7 @@ class Constants
     const PATH_STORES_ENABLED = 'accelasearch_search/filters/stores_enabled';
     const PATH_PRODUCT_DESCRIPTION = 'accelasearch_search/fields/product_description';
     const PATH_PRODUCT_BRAND = 'accelasearch_search/fields/product_brand';
+    const PATH_PRODUCT_IMAGE = 'accelasearch_search/fields/product_image';
     const PATH_BRAND_NAME = 'accelasearch_search/fields/brand_name';
     const PATH_PRODUCT_GTIN = 'accelasearch_search/fields/product_gtin';
     const PATH_PRODUCT_MPN = 'accelasearch_search/fields/product_mpn';
