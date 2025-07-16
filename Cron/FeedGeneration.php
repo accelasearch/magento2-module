@@ -151,7 +151,7 @@ class FeedGeneration
             $this->_notificationsList[] = $msg;
 
             // notifications
-            if (!empty($this->_notificationsList))
+            if (!empty($this->_notificationsList)) {
                 $ret = $this->_notifications->sendNotifications($this->_notificationsList, $store);
                 if (!$ret["success"]) {
                     // deleting lock file
@@ -159,6 +159,7 @@ class FeedGeneration
                     $this->_logger->error($ret["message"]);
                     return false;
                 }
+            }
         }
 
         // deleting lock file

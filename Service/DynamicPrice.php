@@ -61,6 +61,11 @@ class DynamicPrice implements DynamicPriceInterface
     private SerializerInterface $serializer;
 
     /**
+     * @var TaxHelper
+     */
+    private TaxHelper $taxHelper;
+
+    /**
      * @param ProductRepositoryInterface $productRepository
      * @param PriceCurrencyInterface $priceCurrency
      * @param Logger $logger
