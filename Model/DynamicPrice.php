@@ -74,7 +74,7 @@ class DynamicPrice implements DynamicPriceInterface
     /**
      * @inheritdoc
      */
-    public function getPrices($ids, string $visitorType = null, string $currencyCode = null)
+    public function getPrices($ids, ?string $visitorType = null, ?string $currencyCode = null)
     {
         $return = [];
         foreach ($ids as $id) {
