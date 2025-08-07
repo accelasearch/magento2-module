@@ -2,6 +2,12 @@
 # Accelasearch Magento 2
 This document is available in [English](README.md), [Italian](README.it.md).
 
+## Overview
+The Accelasearch Magento 2 module integrates the [Accelasearch](https://accelasearch.com)
+search platform with Magento. It provides tools for exporting product feeds,
+exposing search endpoints, and configuring dynamic prices directly from your
+store.
+
 ## Installation
 ### Composer Installation
 Install the module through [Composer](https://getcomposer.org/]):
@@ -179,6 +185,6 @@ Default cron expression (configurable through user interface):
 ```
 
 ## NOTE
-This modules generates a lock file under `var/locks` in order to prevent concurrent feed generation processes.
+This module generates a lock file under `var/locks` in order to prevent concurrent feed generation processes.
 Bundle and Grouped products are managed in similar way as Configurable products
 Multi Source Inventory is not managed by this module

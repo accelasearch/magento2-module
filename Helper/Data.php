@@ -17,6 +17,7 @@ use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\Serialize\Serializer\Json;
+use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
@@ -35,7 +36,7 @@ class Data extends AbstractHelper
     const SELLING_PRICE_PATH = 'accelasearch_search/dynamicprice/selling_price';
     const SELLING_PRICE_TYPE = 'accelasearch_search/dynamicprice/selling_price_type';
 
-    public $dbmage_read;
+    public ?AdapterInterface $dbmage_read = null;
 
     /**
      * @var StoreManagerInterface

@@ -14,7 +14,7 @@ class FeedGenerationRun extends Command
 
     public function __construct(
         FeedGeneration $feedGeneration,
-        string $name = null
+        ?string $name = null
     ) {
         parent::__construct($name);
         $this->feedGeneration = $feedGeneration;
