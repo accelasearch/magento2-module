@@ -3,6 +3,12 @@
 # Accelasearch Magento 2
 This document is available in [English](README.md), [Italian](README.it.md).
 
+## Panoramica
+Il modulo Accelasearch Magento 2 integra la piattaforma di ricerca
+[Accelasearch](https://accelasearch.com) con Magento. Fornisce strumenti per
+esportare feed di prodotti, esporre endpoint di ricerca e configurare prezzi
+dinamici direttamente dallo store.
+
 ## Installazione
 ### Tramite Composer
 Installa il modulo tramite [Composer](https://getcomposer.org/]):
