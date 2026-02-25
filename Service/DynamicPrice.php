@@ -105,7 +105,7 @@ class DynamicPrice implements DynamicPriceInterface
      * @param string|null $currencyCode
      * @return mixed
      */
-    public function getPrices(array $ids, string $visitorType = null, string $currencyCode = null)
+    public function getPrices(array $ids, ?string $visitorType = null, ?string $currencyCode = null)
     {
         $return = [];
         foreach ($ids as $id) {
