@@ -10,12 +10,8 @@
             <resource>AccelaSearch_Search::accelasearch</resource>
             <group id="accelasearch" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Search</label>
-                <field id="accelasearch_url" translate="label" type="text" sortOrder="1" showInDefault="1" showInStore="1" showInWebsite="1">
-                    <label>Search Url</label>
-                </field>
-                <field id="accelasearch_css_url" translate="label" type="text" sortOrder="1" showInDefault="1" showInStore="1" showInWebsite="1">
-                    <label>Accelasearch CSS Url</label>
-                    <comment>Leave empty to disable</comment>
+                <field id="configuration_url" translate="label" type="text" sortOrder="1" showInDefault="1" showInStore="1" showInWebsite="1">
+                    <label>Configuration Url</label>
                 </field>
             </group>
             <!-- Group: feed Parameters -->

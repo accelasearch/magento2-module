@@ -69,3 +69,4 @@ Filters,Filters
 "Insert the feed generation frequency in cron time string format.<br />
 							For example: <b>0 1 * * *</b> -> to generate the feed at 1:00 am.","Insert the feed generation frequency in cron time string format.<br />
 							For example: <b>0 1 * * *</b> -> to generate the feed at 1:00 am."
+"Configuration Url","Configuration Url"

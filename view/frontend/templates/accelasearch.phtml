@@ -10,8 +10,7 @@ use AccelaSearch\Search\ViewModel\UserHelper;
 
 $configHelper = $block->getConfigHelper();
 $userHelper = $block->getUserHelper();
-$js_url = $configHelper->getAccelasearchUrl();
-$css_url = $configHelper->getCssUrl();
+$configurationUrl = $configHelper->getConfigurationUrl();
 $asConfig = [];
 if ($configHelper->isPublishedVisitorType()) {
     $asConfig["visitorType"] = $userHelper->getCustomerGroup();
@@ -20,15 +19,15 @@ if ($configHelper->isPublishedCurrencyCode()) {
     $asConfig["currencyCode"] = $userHelper->getCurrencyCode();
 }
 ?>
-<?php if ($css_url) : ?>
-    <link rel="stylesheet" type="text/css" media="all" href="<?= $css_url ?>"/>
-<?php endif; ?>
-<?php if ($js_url) : ?>
-    <script defer src="<?= $js_url ?>"></script>
+<?php if ($configurationUrl): ?>
+<script
+  src="https://layer.accelasearch.io/V2/loader.js"
+  data-config="<?= $block->escapeHtmlAttr($configurationUrl) ?>"
+></script>
 <?php endif; ?>
 
 <?php if ($userHelper->isLoggedIn()): ?>
     <script>
-        window.AS_ADVANCED_CONFIG = <?= json_encode($asConfig)?>
+        window.AS_ADVANCED_CONFIG = <?= json_encode($asConfig) ?>
     </script>
 <?php endif; ?>

@@ -9,8 +9,7 @@ use Magento\Store\Model\ScopeInterface;
 
 class ConfigHelper implements ArgumentInterface
 {
-    const ACCELASEARCH_URL = 'accelasearch_search/accelasearch/accelasearch_url';
-    const ACCELASEARCH_CSS_URL = 'accelasearch_search/accelasearch/accelasearch_css_url';
+    const ACCELASEARCH_CONFIGURATION_URL = 'accelasearch_search/accelasearch/configuration_url';
     const IS_PUBLISHED_VISITOR_TYPE = 'accelasearch_search/dynamicprice/publish_visitor_type';
     const IS_PUBLISHED_CURRENCY_CODE = 'accelasearch_search/dynamicprice/publish_currency_code';
 
@@ -32,17 +31,9 @@ class ConfigHelper implements ArgumentInterface
     /**
      * @return string
      */
-    public function getAccelasearchUrl(): string
+    public function getConfigurationUrl(): string
     {
-        return (string)$this->scopeConfig->getValue(self::ACCELASEARCH_URL, ScopeInterface::SCOPE_STORE);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCssUrl()
-    {
-        return $this->scopeConfig->getValue(self::ACCELASEARCH_CSS_URL, ScopeInterface::SCOPE_STORE);
+        return (string)$this->scopeConfig->getValue(self::ACCELASEARCH_CONFIGURATION_URL, ScopeInterface::SCOPE_STORE);
     }
 
     /**
