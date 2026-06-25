@@ -71,3 +71,4 @@ Filters,Filtri
 							For example: <b>0 1 * * *</b> -> to generate the feed at 1:00 am."
 "Select the stock behavior. <br/> Select in stock for export feed with products in stock or select in stock and out of stock for export both","Seleziona il comportamento per lo stock <br/> Selezione in stock per esportare il con i prodotti in stock o selezione in stock e out of stock per esportare il feed con entrambi"
 "Code ISO 3166 alpha 2 of country example: IT","Codice ISO 3166 alpha 2 esempio: IT"
+"Configuration Url","URL di configurazione"
