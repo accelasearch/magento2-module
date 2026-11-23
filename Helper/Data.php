@@ -280,7 +280,7 @@ class Data extends AbstractHelper
     /**
      * Delete the lock file
      *
-     * @return array
+     * @return array|null
      */
     public function fileLockDelete()
     {
