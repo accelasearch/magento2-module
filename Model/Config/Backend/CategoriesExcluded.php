@@ -4,6 +4,7 @@ namespace AccelaSearch\Search\Model\Config\Backend;
 use Magento\Framework\App\Request\Http;
 use Magento\Framework\Option\ArrayInterface;
 use Magento\Catalog\Model\CategoryFactory;
+use Magento\Catalog\Model\ResourceModel\Category as CategoryResource;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
 use Magento\Store\Model\StoreManagerInterface;
 use AccelaSearch\Search\Logger\Logger;
@@ -38,6 +39,8 @@ class CategoriesExcluded implements ArrayInterface
      */
     private $_logger;
 
+    private CategoryResource $categoryResource;
+
     /**
      * CategoriesExcluded constructor.
      *
@@ -46,13 +49,15 @@ class CategoriesExcluded implements ArrayInterface
      * @param Http $request
      * @param StoreManagerInterface $storeManager
      * @param Logger $logger
+     * @param CategoryResource $categoryResource
      */
     public function __construct(
         CategoryFactory $categoryFactory,
         CollectionFactory $categoryCollectionFactory,
         Http $request,
         StoreManagerInterface $storeManager,
-        Logger $logger
+        Logger $logger,
+        CategoryResource $categoryResource
     )
     {
         $this->_categoryFactory = $categoryFactory;
@@ -60,6 +65,7 @@ class CategoriesExcluded implements ArrayInterface
         $this->_storeManager = $storeManager;
         $this->_logger = $logger;
         $this->_request = $request;
+        $this->categoryResource = $categoryResource;
     }
 
     /**
@@ -173,7 +179,8 @@ class CategoriesExcluded implements ArrayInterface
             {
                 if (!in_array($catId, $rootCats))
                 {
-                    $category = $this->_categoryFactory->create()->load($catId);
+                    $category = $this->_categoryFactory->create();
+                    $this->categoryResource->load($category, $catId);
                     $categoryName = $category->getName();
                     $parentName .= $categoryName . ' -> ';
                 }

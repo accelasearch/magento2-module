@@ -3,6 +3,7 @@
 namespace AccelaSearch\Search\Model\Config\Backend;
 
 use Magento\Catalog\Model\CategoryFactory;
+use Magento\Catalog\Model\ResourceModel\Category as CategoryResource;
 use Magento\Catalog\Model\ResourceModel\Category\Collection;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
 use Magento\Framework\Exception\LocalizedException;
@@ -21,19 +22,24 @@ class Categories implements OptionSourceInterface
      */
     protected $_categoryCollectionFactory;
 
+    private CategoryResource $categoryResource;
+
     /**
      * CategoriesExcluded constructor.
      *
      * @param CategoryFactory $categoryFactory
      * @param CollectionFactory $categoryCollectionFactory
+     * @param CategoryResource $categoryResource
      */
     public function __construct(
         CategoryFactory $categoryFactory,
-        CollectionFactory $categoryCollectionFactory
+        CollectionFactory $categoryCollectionFactory,
+        CategoryResource $categoryResource
     )
     {
         $this->_categoryFactory = $categoryFactory;
         $this->_categoryCollectionFactory = $categoryCollectionFactory;
+        $this->categoryResource = $categoryResource;
     }
 
     /**
@@ -119,7 +125,8 @@ class Categories implements OptionSourceInterface
             {
                 if(!in_array($catId, $rootCats))
                 {
-                    $category = $this->_categoryFactory->create()->load($catId);
+                    $category = $this->_categoryFactory->create();
+                    $this->categoryResource->load($category, $catId);
                     $categoryName = $category->getName();
                     $parentName .= $categoryName . ' -> ';
                 }

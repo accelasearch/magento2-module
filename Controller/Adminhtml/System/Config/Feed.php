@@ -11,6 +11,7 @@ use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Backend\App\Action\Context;
 use Magento\Cron\Model\ScheduleFactory;
 use Magento\Cron\Model\Schedule;
+use Magento\Cron\Model\ResourceModel\Schedule as ScheduleResource;
 
 /**
  * Class Feed
@@ -35,25 +36,30 @@ class Feed extends Action
      */
     protected $_verbose;
 
+    private ScheduleResource $scheduleResource;
+
     /**
      * @param Context $context
      * @param JsonFactory $jsonFactory
      * @param ScheduleFactory $scheduleFactory
      * @param DateTime $dateTime
      * @param Verbose $verbose
+     * @param ScheduleResource $scheduleResource
      */
     public function __construct(
         Context $context,
         JsonFactory $jsonFactory,
         ScheduleFactory $scheduleFactory,
         DateTime $dateTime,
-        Verbose $verbose
+        Verbose $verbose,
+        ScheduleResource $scheduleResource
     )
     {
         $this->_jsonFactory = $jsonFactory;
         $this->_scheduleFactory = $scheduleFactory;
         $this->_dateTime = $dateTime;
         $this->_verbose = $verbose;
+        $this->scheduleResource = $scheduleResource;
         parent::__construct($context);
     }
 
@@ -97,16 +103,16 @@ class Feed extends Action
             return array("success" => false, "message" => __("jobCode not set!"));
         }
 
-        $createdAt = strftime('%Y-%m-%d %H:%M:%S', $this->_dateTime->gmtTimestamp());
-        $scheduledAt = strftime('%Y-%m-%d %H:%M:%S', $this->_dateTime->gmtTimestamp() + 60);
+        $createdAt = date('Y-m-d H:i:s', $this->_dateTime->gmtTimestamp());
+        $scheduledAt = date('Y-m-d H:i:s', $this->_dateTime->gmtTimestamp() + 60);
 
         try {
-            $this->_scheduleFactory->create()
+            $schedule = $this->_scheduleFactory->create()
                 ->setJobCode($jobCode)
                 ->setStatus(Schedule::STATUS_PENDING)
                 ->setCreatedAt($createdAt)
-                ->setScheduledAt($scheduledAt)
-                ->save();
+                ->setScheduledAt($scheduledAt);
+            $this->scheduleResource->save($schedule);
         } catch (\Exception $e) {
             return array("success" => false, "message" => __("Impossible to save the cronjob $jobCode"));
         }
