@@ -3,6 +3,7 @@
 namespace AccelaSearch\Search\Console\Command;
 
 use AccelaSearch\Search\Cron\FeedGeneration;
+use Magento\Framework\Console\Cli;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -35,13 +36,13 @@ class FeedGenerationRun extends Command
      * @param OutputInterface $output
      * @return int
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln("AccelaSearch generate feed start");
         $this->feedGeneration->generateFeed();
         $output->writeln("AccelaSearch generate feed end");
 
-        return 0;
+        return Cli::RETURN_SUCCESS;
     }
 
 }

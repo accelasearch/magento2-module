@@ -120,6 +120,7 @@ class FeedFile
      */
     private function _checkAndCreateDir($feedDirectory)
     {
+        $feedDir = '';
         try {
             // Feed Directory
             $feedDir = $this->_directoryList->getPath(DirectoryList::ROOT)
@@ -168,6 +169,7 @@ class FeedFile
 
             // PRODUCTS ITERATION
             foreach ($feedProducts as $feedProduct) {
+                $productSku = $feedProduct['sku'];
                 try {
 
 
@@ -200,7 +202,6 @@ class FeedFile
 
                     $productId = $feedProduct['entity_id'];
                     /* id (required) */
-                    $productSku = $feedProduct['sku'];
                     if (!$productId || !$productSku) {
                         continue;
                     }
